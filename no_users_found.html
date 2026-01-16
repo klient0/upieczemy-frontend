@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brak użytkowników</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffe4e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d9534f;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #FF80AB;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #ff61a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ups! Nie znaleziono użytkowników z miasta "{{ city }}".</h1>
+        <p>Może być pierwszą osobą, która się tu zarejestruje!</p>
+        <a href="{{ url_for('index') }}">Powrót do wyszukiwarki</a>
+    </div>
+</body>
+</html>

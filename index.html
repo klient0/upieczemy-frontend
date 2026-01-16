@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upieczemy.pl - Twój marketplace wypieków</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        /* --- STYLE GŁÓWNE --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: hsl(308, 44%, 86%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+            padding: 40px 0 30px 0;
+            position: relative;
+        }
+
+        .baker-logo-container {
+            display: inline-block;
+            position: relative;
+            animation: gentle-sway 4s ease-in-out infinite;
+            transform-origin: center bottom;
+        }
+
+        .site-name {
+            font-family: 'Pacifico', cursive;
+            font-size: 6rem;
+            color: #FF80AB;
+            margin: 0;
+            text-shadow: -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF, 2px 2px 0 #FFF, 4px 4px 0 #ffffff, 6px 6px 0 #000000, 8px 8px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .cartoon-baker {
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        /* ... (reszta stylów dla cukiernika) ... */
+        .baker-head { width: 100px; height: 90px; background: #FFE0BD; border-radius: 50%; position: relative; margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .baker-hat { width: 80px; height: 50px; background: #FFFFFF; border-radius: 40px 40px 20px 20px; position: absolute; top: -40px; left: 50%; transform: translateX(-50%); box-shadow: 0 -3px 8px rgba(0,0,0,0.1); animation: hat-bounce 4s ease-in-out infinite; }
+        .baker-hat::before { content: ''; width: 90px; height: 15px; background: #FFFFFF; position: absolute; bottom: -8px; left: -5px; border-radius: 10px; }
+        .baker-eyes { position: absolute; top: 33%; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; }
+        .baker-eye { width: 18px; height: 22px; background: #333; border-radius: 50%; position: relative; animation: blink 5s infinite; }
+        .baker-eye::before { content: ''; width: 6px; height: 8px; background: white; border-radius: 50%; position: absolute; top: 3px; right: 4px; }
+        .baker-mouth { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); width: 30px; height: 15px; border-bottom: 3px solid #333; border-radius: 0 0 30px 30px; }
+        .baker-blush { position: absolute; width: 20px; height: 12px; background: rgba(255, 150, 150, 0.6); border-radius: 50%; top: 50%; }
+        .baker-blush.left { left: 15px; }
+        .baker-blush.right { right: 15px; }
+        .baker-body { width: 85px; height: 60px; background: #FFFFFF; border-radius: 35px 35px 20px 20px; position: relative; margin: -5px auto 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .baker-apron { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 50px; height: 35px; background: #FF80AB; border-radius: 0 0 15px 15px; display: flex; align-items: center; justify-content: center; }
+        .baker-apron::before { content: '💝'; font-size: 20px; }
+        .baker-arms { position: absolute; top: -20px; width: 160px; left: 50%; transform: translateX(-50%); display: flex; justify-content: space-between; }
+        .baker-arm { width: 20px; height: 70px; background: #FFE0BD; border-radius: 10px; position: relative; }
+        .baker-arm.left { transform: rotate(-25deg); transform-origin: top center; }
+        .baker-arm.right { transform: rotate(25deg); transform-origin: top center; }
+        .baker-hands { position: absolute; top: -45px; width: 100%; display: flex; justify-content: space-between; padding: 0 2px; left: -15px; }
+        .oven-mitt { width: 45px; height: 55px; position: relative; animation: hold-gentle 4s ease-in-out infinite; }
+        .oven-mitt.left { animation-delay: 0s; transform: rotate(-8deg); }
+        .oven-mitt.right { animation-delay: 0.2s; transform: rotate(8deg); }
+        .mitt-main { width: 35px; height: 35px; background: #FF6B6B; border-radius: 18px 18px 12px 12px; position: absolute; top: 0; left: 5px; box-shadow: 0 3px 8px rgba(0,0,0,0.2); overflow: hidden; }
+        .mitt-thumb { width: 10px; height: 15px; background: #FF6B6B; border-radius: 8px; position: absolute; top: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .oven-mitt.left .mitt-thumb { left: -3px; transform: rotate(-20deg); }
+        .oven-mitt.right .mitt-thumb { right: -23px; transform: rotate(20deg); }
+        .mitt-cuff { width: 40px; height: 20px; background: #FF8787; position: absolute; bottom: 0; left: 2.5px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .quilt-pattern { position: absolute; width: 100%; height: 100%; opacity: 0.3; }
+        .quilt-line { position: absolute; background: rgba(255,255,255,0.4); }
+        .quilt-line:nth-child(1) { width: 100%; height: 2px; top: 8px; }
+        .quilt-line:nth-child(2) { width: 100%; height: 2px; top: 16px; }
+        .quilt-line:nth-child(3) { width: 100%; height: 2px; top: 24px; }
+        .quilt-line:nth-child(4) { width: 100%; height: 2px; top: 32px; }
+        .quilt-line:nth-child(5) { width: 2px; height: 100%; left: 8px; }
+        .quilt-line:nth-child(6) { width: 2px; height: 100%; left: 16px; }
+        .quilt-line:nth-child(7) { width: 2px; height: 100%; left: 24px; }
+        .mitt-loop { width: 8px; height: 8px; border: 2px solid #FF5252; border-radius: 50%; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); background: transparent; }
+        .sparkle { position: absolute; top: -10px; right: -5px; font-size: 12px; animation: sparkle 2s infinite; }
+
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 40px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 500px;
+            max-width: 90%;
+        }
+
+        .search-box {
+            background: hsl(337, 94%, 86%);
+            padding: 4px;
+            width: 100%;
+            border-radius: 122px;
+            box-shadow: 1px 7px 56px rgba(254, 254, 254, 0.934);
+            text-align: center;
+        }
+
+        .search-box input[type="search"] {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid hsl(310, 2%, 52%);
+            border-radius: 122px;
+            font-size: 15px;
+            outline: none;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .search-box input[type="search"]:focus {
+            border-color: hsl(308, 44%, 86%);
+            box-shadow: 0 0 0 2px hsl(308, 44%, 86%);
+        }
+
+        .search-box input[type="search"]::placeholder {
+            font-weight: 600;
+            font-family: 'Arial';
+            color: #0000004e;
+        }
+
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f8f8f8;
+        }
+
+        /* --- STYLE DLA PANELU LOGOWANIA --- */
+        .login-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #FF80AB;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            z-index: 5;
+        }
+
+        .login-button:hover {
+            background-color: #ff61a1;
+        }
+
+        .login-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-content h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .login-content form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #FF80AB;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-content form button:hover {
+            background-color: #ff61a1;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #000;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- DODATKOWE STYLE DLA PRZEŁĄCZANIA FORMULARZY --- */
+        .toggle-form-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .toggle-form-link a {
+            color: #FF80AB;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .toggle-form-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- STYLE DLA POWIADOMIEŃ --- */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .notification.success {
+            background-color: #4CAF50; /* Zielony */
+        }
+
+        .notification.error {
+            background-color: #f44336; /* Czerwony */
+        }
+
+        .notification.info {
+            background-color: #2196F3; /* Niebieski */
+        }
+
+        /* --- ANIMACJE --- */
+        @keyframes gentle-sway {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        @keyframes hold-gentle {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-3px) scale(1.05); }
+        }
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+        @keyframes hat-bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-3px); }
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="baker-logo-container">
+            <h1 class="site-name">Upieczemy.pl</h1>
+            <div class="cartoon-baker">
+                <div class="baker-head">
+                    <div class="baker-hat"></div>
+                    <div class="baker-eyes"><div class="baker-eye"></div><div class="baker-eye"></div></div>
+                    <div class="baker-mouth"></div>
+                    <div class="baker-blush left"></div><div class="baker-blush right"></div>
+                </div>
+                <div class="baker-body">
+                    <div class="baker-arms">
+                        <div class="baker-arm left"><div class="baker-hands"><div class="oven-mitt left"><div class="mitt-main"><div class="quilt-pattern"><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div></div><div class="mitt-loop"></div></div><div class="mitt-thumb"></div><div class="mitt-cuff"></div><span class="sparkle">✨</span></div></div></div>
+                        <div class="baker-arm right"><div class="baker-hands"><div class="oven-mitt right"><div class="mitt-main"><div class="quilt-pattern"><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div><div class="quilt-line"></div></div><div class="mitt-loop"></div></div><div class="mitt-thumb"></div><div class="mitt-cuff"></div><span class="sparkle">✨</span></div></div></div>
+                    </div>
+                    <div class="baker-apron"></div>
+                </div>
+            </div>
+        </div>
+        <button id="loginBtn" class="login-button">Zaloguj się</button>
+    </header>
+
+    <!-- ZAKTUALIZOWANY PANEL LOGOWANIA Z OPCJĄ REJESTRACJI -->
+    <div id="login-panel" class="login-panel hidden">
+        <div class="login-content">
+            <span class="close-btn" id="closeBtn">&times;</span>
+
+            <!-- FORMULARZ LOGOWANIA -->
+            <div id="login-form-container">
+                <h2>Logowanie</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">Adres e-mail:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Hasło:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit">Zaloguj się</button>
+                </form>
+                <p class="toggle-form-link">Nie masz konta? <a href="#" id="show-register">Utwórz je</a></p>
+            </div>
+
+            <!-- FORMULARZ REJESTRACJI -->
+            <div id="register-form-container" class="hidden">
+                <h2>Utwórz konto</h2>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="new-email">Adres e-mail:</label>
+                        <input type="email" id="new-email" name="new_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">Hasło:</label>
+                        <input type="password" id="new-password" name="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-username">Nazwa użytkownika:</label>
+                        <input type="text" id="new-username" name="new_username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Miasto:</label>
+                        <input type="text" id="city" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postal-code">Kod pocztowy:</label>
+                        <input type="text" id="postal-code" name="postal_code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Adres:</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Numer telefonu:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <button type="submit">Zarejestruj się</button>
+                </form>
+                <p class="toggle-form-link">Masz już konto? <a href="#" id="show-login">Zaloguj się</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <main class="main-container">
+        <div class="search-wrapper">
+            <div class="search-box">
+                <input type="search" id="search-input" placeholder="Wyszukaj miasto..." aria-label="Wyszukaj miasto"/>
+            </div>
+            <div id="suggestions-box" class="suggestions-box" style="display: none;"></div>
+        </div>
+    </main>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- ELEMENTY DOM ---
+    const loginBtn = document.getElementById('loginBtn');
+    const loginPanel = document.getElementById('login-panel');
+    const closeBtn = document.getElementById('closeBtn');
+    const searchInput = document.getElementById('search-input');
+    const suggestionsBox = document.getElementById('suggestions-box');
+
+    const loginFormContainer = document.getElementById('login-form-container');
+    const registerFormContainer = document.getElementById('register-form-container');
+    const showRegisterLink = document.getElementById('show-register');
+    const showLoginLink = document.getElementById('show-login');
+
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    // --- LOGIKA WYSZUKIWARKI ---
+    const fetchSuggestions = async (query) => {
+        if (query.length < 2) { 
+            suggestionsBox.style.display = 'none'; 
+            return; 
+        }
+        try {
+            const response = await fetch(`http://localhost:5000/api/suggestions?q=${encodeURIComponent(query)}`);
+            const suggestions = await response.json();
+            suggestionsBox.innerHTML = '';
+            if (suggestions.length > 0) {
+                suggestions.forEach(city => {
+                    const item = document.createElement('div');
+                    item.classList.add('suggestion-item');
+                    item.textContent = city;
+                    item.addEventListener('click', () => { 
+                        window.location.href = `/uzytkownicy/${encodeURIComponent(city)}`; 
+                    });
+                    suggestionsBox.appendChild(item);
+                });
+                suggestionsBox.style.display = 'block';
+            } else { 
+                suggestionsBox.style.display = 'none'; 
+            }
+        } catch (error) { 
+            console.error('Błąd podczas pobierania sugestii:', error); 
+            suggestionsBox.style.display = 'none'; 
+        }
+    };
+
+    let debounceTimer;
+    searchInput.addEventListener('input', (event) => {
+        const query = event.target.value;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => { fetchSuggestions(query); }, 300);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!searchInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
+            suggestionsBox.style.display = 'none';
+        }
+    });
+
+    // --- FUNKCJE POMOCNICZE (LOGOWANIE/REJESTRACJA) ---
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => { notification.style.opacity = '1'; notification.style.transform = 'translateX(0)'; }, 10);
+        setTimeout(() => { notification.style.opacity = '0'; notification.style.transform = 'translateX(100%)'; setTimeout(() => notification.remove(), 300); }, 3000);
+    }
+
+    function updateUIForLoggedInUser(user) {
+        loginBtn.textContent = `Witaj, ${user.nazwaUzytkownika || user.email}`;
+        loginBtn.removeEventListener('click', openLoginPanel);
+        loginBtn.addEventListener('click', handleLogout);
+        loginBtn.style.backgroundColor = '#e91e63';
+    }
+
+    function updateUIForLoggedOutUser() {
+        loginBtn.textContent = 'Zaloguj się';
+        loginBtn.removeEventListener('click', handleLogout);
+        loginBtn.addEventListener('click', openLoginPanel);
+        loginBtn.style.backgroundColor = '#FF80AB';
+    }
+
+    function openLoginPanel() { loginPanel.classList.remove('hidden'); }
+    function closeLoginPanel() { loginPanel.classList.add('hidden'); }
+    function handleLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        updateUIForLoggedOutUser();
+        showNotification('Wylogowano pomyślnie.', 'success');
+    }
+
+    // --- OBSŁUGA PANELU LOGOWANIA ---
+    loginBtn.addEventListener('click', openLoginPanel);
+    closeBtn.addEventListener('click', closeLoginPanel);
+    loginPanel.addEventListener('click', (event) => { if (event.target === loginPanel) { closeLoginPanel(); } });
+    showRegisterLink.addEventListener('click', (event) => { event.preventDefault(); loginFormContainer.classList.add('hidden'); registerFormContainer.classList.remove('hidden'); });
+    showLoginLink.addEventListener('click', (event) => { event.preventDefault(); registerFormContainer.classList.add('hidden'); loginFormContainer.classList.remove('hidden'); });
+
+    // --- LOGIKA PRZESYŁANIA DANYCH ---
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/logowanie', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, haslo: password }) });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.uzytkownik));
+                updateUIForLoggedInUser(data.uzytkownik);
+                closeLoginPanel();
+                showNotification('Zalogowano pomyślnie!', 'success');
+            } else {
+                showNotification(data.komunikat || 'Błąd logowania. Sprawdź dane.', 'error');
+            }
+        } catch (error) { console.error('Błąd sieciowy:', error); showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error'); }
+    });
+
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const daneRejestracji = { email: document.getElementById('new-email').value, haslo: document.getElementById('new-password').value, nazwaUzytkownika: document.getElementById('new-username').value, miasto: document.getElementById('city').value, kodPocztowy: document.getElementById('postal-code').value, adres: document.getElementById('address').value, telefon: document.getElementById('phone').value };
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/rejestracja', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(daneRejestracji) });
+            const data = await response.json();
+            if (response.ok) {
+                showNotification('Rejestracja zakończona! Możesz się teraz zalogować.', 'success');
+                registerFormContainer.classList.add('hidden');
+                loginFormContainer.classList.remove('hidden');
+                registerForm.reset();
+            } else {
+                showNotification(data.komunikat || 'Błąd rejestracji.', 'error');
+            }
+        } catch (error) { console.error('Błąd sieciowy:', error); showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error'); }
+    });
+
+    // --- SPRAWDZENIE STANU ZALOGOWANIA PRZY ŁADOWANIU STRONY ---
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (token && user) { updateUIForLoggedInUser(user); }
+});
+</script>
+</body>
+</html>
