@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moje Konto - Upieczemy.pl</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        /* --- STYLE GŁÓWNE I NAGŁÓWKA --- */
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: hsl(308, 44%, 86%); min-height: 100vh; }
+        .header { width: 100%; padding: 20px 40px; background-color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); box-sizing: border-box; }
+        
+        /* --- KONTENER I STYL DLA WYSZUKIWARKI --- */
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .search-wrapper { position: relative; }
+        .location-search { display: flex; align-items: center; background-color: #f5f5f5; border-radius: 20px; padding: 5px 15px; transition: box-shadow 0.3s, background-color 0.3s; cursor: pointer; }
+        .location-search:focus-within { background-color: #fff; box-shadow: 0 0 0 2px #FF80AB; }
+        .location-search .search-icon { width: 18px; height: 18px; fill: #888; margin-right: 8px; }
+        #citySearchInput { border: none; background: transparent; outline: none; font-size: 14px; width: 150px; transition: width 0.3s; }
+        #citySearchInput::placeholder { color: #aaa; }
+        #citySearchInput:focus { width: 200px; }
+        
+        /* --- STYLE DLA SUGESTII WYSZUKIWARKI --- */
+        .suggestions-box { position: absolute; top: 100%; left: 0; right: 0; background-color: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 10; }
+        .suggestion-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background-color: #f8f8f8; }
+        
+        .site-name { font-family: 'Pacifico', cursive; font-size: 2rem; color: #FF80AB; margin: 0; text-decoration: none; transition: color 0.3s; }
+        .site-name:hover { color: #ff61a1; }
+        .header-buttons-container { display: flex; gap: 10px; align-items: center; }
+        .login-button { padding: 4px 10px; background-color: #FF80AB; color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; text-decoration: none; }
+        .login-button:hover { background-color: #ff61a1; }
+        #kontoBtn { background-color: #070707; }
+        #kontoBtn:hover { background-color: #ff80ab; }
+        .hidden { display: none !important; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; font-weight: bold; z-index: 2000; opacity: 0; transform: translateX(100%); transition: opacity 0.3s ease, transform 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .notification.success { background-color: #4CAF50; }
+        .notification.error { background-color: #f44336; }
+        .notification.info { background-color: #2196F3; }
+
+        /* --- STYLE DLA IKON W NAGŁÓWKU --- */
+        .icon-button { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color: transparent; border-radius: 50%; color: #333; text-decoration: none; transition: background-color 0.3s, color 0.3s; position: relative; }
+        .icon-button:hover { background-color: #f0f0f0; color: #FF80AB; }
+        .icon-button svg { width: 22px; height: 22px; fill: currentColor; }
+        .cart-count, .favorites-count { position: absolute; top: -5px; right: -5px; background-color: #e91e63; color: white; font-size: 11px; font-weight: bold; padding: 2px 5px; border-radius: 10px; min-width: 18px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* --- STYLE DLA DYMKÓW (TOOLTIPS) --- */
+        .icon-button::after { content: attr(data-tooltip); position: absolute; bottom: 111%; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 4px 4px; border-radius: 6px; font-size: 9px; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1002; }
+        .icon-button::before { content: ""; position: absolute; bottom: 80%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #333; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1002; }
+        .icon-button:hover::after, .icon-button:hover::before { opacity: 1; visibility: visible; }
+
+        /* --- GŁÓWNY KONTENER TREŚCI --- */
+        .profile-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .profile-header { text-align: center; margin-bottom: 40px; }
+        .profile-picture-wrapper { position: relative; display: inline-block; cursor: pointer; }
+        .profile-picture { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 5px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: opacity 0.3s; }
+        .profile-picture-wrapper:hover .profile-picture { opacity: 0.8; }
+        .profile-picture-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background-color: rgba(0,0,0,0.5); color: white; display: flex; justify-content: center; align-items: center; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .profile-picture-wrapper:hover .profile-picture-overlay { opacity: 1; }
+        .welcome-message { font-size: 1.8rem; color: #333; margin: 0; }
+        .welcome-message span { color: #ff80ab; font-weight: bold; }
+
+        /* --- KONTENER PRZYCISKÓW --- */
+        .profile-actions { margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .profile-actions button { padding: 8px 23px; font-size: 16px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; transition: background-color 0.3s, transform 0.2s; }
+        .add-product-btn { background-color: #4CAF50; color: white; }
+        .add-product-btn:hover { background-color: #45a049; transform: translateY(-2px); }
+        .view-products-btn { background-color: #1f1c1c; color: white; }
+        .view-products-btn:hover { background-color: #ff80ab; transform: translateY(-2px); }
+        .purchased-btn { background-color: #1f1c1c; color: white; }
+        .purchased-btn:hover { background-color: #ff80ab; transform: translateY(-2px); }
+        .sold-btn { background-color: #1f1c1c; color: white; }
+        .sold-btn:hover { background-color: #ff80ab; transform: translateY(-2px); }
+
+        /* --- STYL DLA MENU KONTA --- */
+        .account-dropdown { position: relative; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background-color: white; min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1001; border-radius: 8px; overflow: hidden; }
+        .dropdown-menu a { color: #333; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px; transition: background-color 0.3s; }
+        .dropdown-menu a:hover { background-color: #f1f1f1; }
+        .account-dropdown:hover .dropdown-menu { display: block; }
+
+        /* --- OBSZAR Z SEKCJAMI --- */
+        .content-area { display: flex; flex-direction: column; gap: 30px; }
+        .section-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .section-card h3 { margin-top: 0; color: #333; border-bottom: 2px solid #FF80AB; padding-bottom: 10px; }
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        
+        /* --- OSTATECZNA, NAJBARDZIEJSZA WERSJA KARTY PRODUKTU --- */
+        .item-card { 
+            position: relative; /* Kontekst dla quick view */
+            display: flex; 
+            align-items: stretch; /* <--- ZMIANA NA 'stretch' */
+            border: 1px solid #ddd; 
+            border-radius: 10px; 
+            padding: 15px; 
+            background-color: #fafafa; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            gap: 20px;
+            overflow: hidden; /* Zapobiega wychodzeniu elementów poza kartę */
+            cursor: pointer; /* Dodajemy kursor wskazujący możliwość kliknięcia */
+        }
+        .item-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        
+        .product-image-container {
+            flex: 0 0 55%;
+    aspect-ratio: 1 / 1; /* <-- DODAJ TĘ LINIĘ, ABY KONTENER BYŁ KWADRATOWY */
+            position: relative;
+            cursor: pointer;
+        }
+
+        .product-image-container img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 5px;
+            transition: opacity 0.3s;
+        }
+
+        .product-image-container:hover img {
+            opacity: 0.8;
+        }
+
+        .product-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none; /* Blokujemy klikanie w overlay, aby kliknięcie szło na obrazek */
+            border-radius: 5px;
+        }
+        .product-image-container:hover .product-image-overlay {
+            opacity: 1;
+        }
+        
+        /* --- SPECJALNY PRZYCISK DO ZMIANY ZDJĘCIA W NAKŁADCE --- */
+        .change-image-btn-overlay {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: auto; /* Włączamy klikanie */
+        }
+        .product-image-container:hover .change-image-btn-overlay {
+            opacity: 1;
+        }
+
+        /* --- KONTENER SZCZEGÓŁÓW (poprawiony, klarowny układ) --- */
+        .product-details-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .product-details-container h4 { 
+            margin: 0 0 5px 0; 
+            color: #333; 
+            font-size: 1.2rem;
+            flex-shrink: 0; /* Zapobiega kurczeniu się nagłówka */
+        }
+        
+        /* --- OSTATECZNA, DZIAŁAJĄCA WERSJA DLA OPISU --- */
+        .product-details-container p { 
+            margin: 0 0 10px 0; 
+            color: #777; 
+            font-size: 14px; 
+            line-height: 1.4;
+            
+            /* --- KLUCZOWE WŁAŚCIWOŚCI --- */
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Pokaż max. 3 linie */
+            /* --- NOWE, KLUCZOWE WŁAŚCIWOŚCI --- */
+            overflow-wrap: break-word; /* Wymusza łamanie zbyt długich słów */
+            word-break: break-word;   /* Zapewnia kompatybilność */
+            /* --------------------------------------- */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1; /* Niechaj ten element wypełni dostępną przestrzeń */
+            min-height: 0; /* Zapobiega problemom z flex-grow w Chrome */
+            /* ------------------------------------------- */
+        }
+
+        .product-details-container .price { 
+            font-size: 20px; 
+            font-weight: bold; 
+            color: #4CAF50; 
+            margin-top: auto; /* Wypchnij cenę na sam dół */
+            margin-bottom: 15px; 
+            flex-shrink: 0; /* Zapobiega kurczeniu się ceny */
+        }
+        
+        .product-size {
+            display: inline-block;
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .item-actions { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-top: auto; /* Wypchnij przyciski na sam dół */
+            flex-shrink: 0; /* Zapobiega kurczeniu się przycisków */
+        }
+        
+        .item-actions button { padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; transition: background-color 0.3s; flex-grow: 1; margin: 0 5px;}
+        .edit-btn { background-color: #005353; color: white; }
+        .edit-btn:hover { background-color: #003131; }
+        .delete-btn { background-color: #f44336; color: white; }
+        .delete-btn:hover { background-color: #d32f2f; }
+        
+        /* --- STYLE DLA QUICK VIEW MODAL --- */
+        .quick-view-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .quick-view-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .quick-view-content {
+            background-color: white;
+            border-radius: 10px;
+            max-width: 1100px;
+            width: 90%;
+            max-height: 90vh;
+        
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .quick-view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quick-view-close {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #777;
+            background: none;
+            border: none;
+        }
+        
+        .quick-view-close:hover {
+            color: #333;
+        }
+        
+        .quick-view-body {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            flex: 1;               /* <-- DODAJ: zajmuje pozostałą przestrzeń w pionie */
+            overflow-y: auto;      /* <-- DODAJ: przewijanie pojawia się tutaj */
+            min-height: 0;         /* <-- DODAJ: kluczowe, aby flexbox mógł zmniejszyć element */
+        }
+        
+        .quick-view-image {
+            flex: 0 0 40%;
+            max-height: 400px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .quick-view-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .quick-view-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .quick-view-title {
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .quick-view-price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        
+        .quick-view-description {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #555;
+            /* Pozwalamy opisowi rosnąć i wypełniać dostępną przestrzeń */
+            flex-grow: 1; 
+            /* Przewijanie jest obsługiwane przez element nadrzędny (.quick-view-body) */
+            /* --- DODANE WŁAŚCIWOŚCI DO ŁAMANIA SŁÓW --- */
+            overflow-wrap: break-word; /* Kluczowa właściwość - łamie słowo, jeśli jest za długie */
+            word-break: break-word;   /* Zapewnia kompatybilność ze starszymi przeglądarkami */
+            /* --------------------------------------------- */
+        }
+        
+        .quick-view-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            justify-content: flex-end; /* <-- DODAJ TĘ LINIĘ */
+        }
+        
+        .quick-view-actions button {
+            padding: 6px 9px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .quick-view-edit {
+            background-color: #005353;
+            color: white;
+        }
+        
+        .quick-view-edit:hover {
+            background-color: #003131;
+        }
+        
+        .quick-view-delete {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .quick-view-delete:hover {
+            background-color: #d32f2f;
+        }
+        
+        .quick-view-change-image {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .quick-view-change-image:hover {
+            background-color: #e68900;
+        }
+        
+        /* --- MODAL DODAWANIA PRODUKTU --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 500px; max-width: 90%; max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal-content h3 { margin-top: 0; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .modal-content button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .close-modal-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer; }
+        .close-modal-btn:hover { color: #000; }
+        
+        /* --- STYLE DLA POTWIERDZENIA USUNIĘCIA --- */
+        .confirm-delete { background-color: #f44336; }
+        .confirm-delete:hover { background-color: #d32f2f; }
+        .cancel-delete { background-color: #9e9e9e; margin-right: 10px; }
+        .cancel-delete:hover { background-color: #757575; }
+        .delete-confirmation { display: flex; justify-content: center; margin-top: 20px; }
+        .delete-confirmation button { width: auto; padding: 10px 20px; }
+        
+        /* --- STYLE DLA WYBORU ROZMIARU --- */
+        .size-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .size-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .size-option:hover {
+            border-color: #FF80AB;
+        }
+        
+        .size-option.selected {
+            border-color: #FF80AB;
+            background-color: #fff0f5;
+        }
+        
+        .size-option .size-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .size-option .size-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* --- STYLE DLA WEJŚĆ CEN --- */
+        .price-inputs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .price-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .price-input-group label {
+            flex: 0 0 120px;
+            margin-bottom: 0;
+        }
+        
+        .price-input-group input {
+            flex: 1;
+        }
+        
+        .price-input-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        
+        /* --- DODANE STYLE DLA INDEKATORA ŁADOWANIA --- */
+        .loading-indicator {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #FF80AB;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* --- RESPONSYWNOŚĆ --- */
+        @media (max-width: 768px) {
+            .item-card {
+                flex-direction: column;
+                align-items: center; /* Wyśrodkuj zawartość w mobile */
+            }
+            .product-image-container {
+                flex: none; /* Anuluj flex */
+                width: 100%;
+                max-width: 200px;
+            }
+            .product-details-container {
+                width: 100%;
+                margin-top: 15px;
+                text-align: center;
+            }
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-view-body {
+                flex-direction: column;
+            }
+            
+            .quick-view-image {
+                flex: none;
+                width: 100%;
+                max-height: 250px;
+            }
+            
+            .size-selector {
+                flex-direction: column;
+            }
+            
+            .price-input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .price-input-group label {
+                flex: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <a href="/" class="site-name">Upieczemy.pl</a>
+            <div class="search-wrapper">
+                <div class="location-search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="search-icon"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    <input type="text" id="citySearchInput" placeholder="Wyszukaj miasto...">
+                </div>
+                <div id="city-suggestions-box" class="suggestions-box" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="header-buttons-container">
+            <a href="/powiadomienia" class="icon-button" aria-label="Powiadomienia" data-tooltip="Powiadomienia">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            </a>
+            <a href="/koszyk" class="icon-button" aria-label="Koszyk" data-tooltip="Koszyk">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span class="cart-count hidden">0</span>
+            </a>
+            <a href="/wiadomosci" class="icon-button" aria-label="Wiadomości" data-tooltip="Wiadomości">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </a>
+            <a href="/ulubione" class="icon-button" aria-label="Ulubione" data-tooltip="Ulubione">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span class="favorites-count hidden">0</span>
+            </a>
+            <a href="#" id="loginBtn" class="icon-button" aria-label="Wyloguj" data-tooltip="Wyloguj">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            </a>
+            <div class="account-dropdown">
+                <button id="kontoBtn" class="login-button">Konto</button>
+                <div class="dropdown-menu">
+                    <a href="edit-profile.html" id="userDataLink">Dane użytkownika</a>
+                    <a href="platnosci.html" id="paymentsLink">Płatności</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        <div class="profile-header">
+            <div class="profile-picture-wrapper">
+                <img id="profile-pic" class="profile-picture" src="https://via.placeholder.com/120" alt="Zdjęcie profilowe">
+                <div class="profile-picture-overlay">Zmień zdjęcie</div>
+                <input type="file" id="profile-pic-input" accept="image/*" style="display: none;">
+            </div>
+            <h2 id="welcome-msg" class="welcome-message">Witaj, <span id="user-name">...</span></h2>
+            
+            <div class="profile-actions">
+                <button id="addProductBtn" class="add-product-btn">Dodaj produkt+</button>
+                <button id="myProductsBtn" class="view-products-btn">Moje produkty</button>
+                <button id="soldBtn" class="sold-btn">Sprzedane</button>
+                <button id="purchasedBtn" class="purchased-btn">Kupione</button>
+            </div>
+        </div>
+
+        <section class="content-area">
+            <div id="my-products-section" class="section-card hidden">
+                <h3>Moje Produkty</h3>
+                <div id="products-grid" class="items-grid"></div>
+            </div>
+            <div id="favorites-section" class="section-card hidden">
+                <h3>Ulubione Produkty</h3>
+                <div id="favorites-grid" class="items-grid"></div>
+            </div>
+            <div id="payments-section" class="section-card hidden">
+                <h3>Historia Płatności</h3>
+                <div id="payments-grid" class="items-grid"></div>
+            </div>
+            <div id="purchased-section" class="section-card hidden">
+                <h3>Produkty Kupione</h3>
+                <div id="purchased-grid" class="items-grid"></div>
+            </div>
+            <div id="sold-section" class="section-card hidden">
+                <h3>Produkty Sprzedane</h3>
+                <div id="sold-grid" class="items-grid"></div>
+            </div>
+            <div id="my-orders-section" class="section-card hidden">
+                <h3>Moje Zamówienia</h3>
+                <div id="orders-grid" class="items-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- --- QUICK VIEW MODAL --- -->
+    <div id="quickViewModal" class="quick-view-modal">
+        <div class="quick-view-content">
+            <div class="quick-view-header">
+                <button class="quick-view-close">&times;</button>
+            </div>
+            <div class="quick-view-body">
+                <div class="quick-view-image">
+                    <img id="quickViewImage" src="" alt="">
+                </div>
+                <div class="quick-view-details">
+                    <h3 id="quickViewTitle" class="quick-view-title"></h3>
+                    <div id="quickViewPrice" class="quick-view-price"></div>
+                    <div id="quickViewSize" class="product-size"></div>
+                    <p id="quickViewDescription" class="quick-view-description"></p>
+                    <div class="quick-view-actions">
+                        <button id="quickViewEdit" class="quick-view-edit">Edytuj</button>
+                        <button id="quickViewDelete" class="quick-view-delete">Usuń</button>
+                        <button id="quickViewChangeImage" class="quick-view-change-image">Zmień zdjęcie</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- MODAL DODAWANIA PRODUKTU --- -->
+    <div id="addProductModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal-btn" id="closeModalBtn">&times;</span>
+            <h3>Dodaj nowy produkt</h3>
+            <form id="addProductForm">
+                <div class="form-group"><label for="product-name">Nazwa produktu</label><input type="text" id="product-name" required></div>
+                <div class="form-group"><label for="product-description">Opis</label><textarea id="product-description" required></textarea></div>
+                
+                <div class="form-group">
+                    <label>Wybierz rozmiar produktu</label>
+                    <div class="size-selector">
+                        <div class="size-option" data-size="mini">
+                            <div class="size-name">Mini</div>
+                            <div class="size-desc">Mały rozmiar, idealny na pojedyncze osoby</div>
+                        </div>
+                        <div class="size-option selected" data-size="normal">
+                            <div class="size-name">Normal</div>
+                            <div class="size-desc">Standardowy rozmiar dla 2-4 osób</div>
+                        </div>
+                        <div class="size-option" data-size="max">
+                            <div class="size-name">Max</div>
+                            <div class="size-desc">Duży rozmiar dla większych grup</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ceny dla poszczególnych rozmiarów (opcjonalnie)</label>
+                    <div class="price-input-hint">Wpisz cenę tylko dla rozmiarów, które oferujesz. Cena dla wybranego rozmiaru jest wymagana.</div>
+                    <div class="price-inputs-container">
+                        <div class="price-input-group">
+                            <label for="price-mini">Cena (Mini):</label>
+                            <input type="number" id="price-mini" step="0.01" min="0">
+                        </div>
+                        <div class="price-input-group">
+                            <label for="price-normal">Cena (Normal):</label>
+                            <input type="number" id="price-normal" step="0.01" min="0">
+                        </div>
+                        <div class="price-input-group">
+                            <label for="price-max">Cena (Max):</label>
+                            <input type="number" id="price-max" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group"><label for="product-image">Zdjęcie produktu</label><input type="file" id="product-image" accept="image/*"></div>
+                <button type="submit">Dodaj produkt</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- --- MODAL EDYCJI PRODUKTU --- -->
+    <div id="editProductModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal-btn" id="closeEditModalBtn">&times;</span>
+            <h3>Edytuj produkt</h3>
+            <form id="editProductForm">
+                <input type="hidden" id="edit-product-id">
+                <div class="form-group"><label for="edit-product-name">Nazwa produktu</label><input type="text" id="edit-product-name" required></div>
+                <div class="form-group"><label for="edit-product-description">Opis</label><textarea id="edit-product-description" required></textarea></div>
+                
+                <div class="form-group">
+                    <label>Wybierz rozmiar produktu</label>
+                    <div class="size-selector">
+                        <div class="size-option" data-size="mini">
+                            <div class="size-name">Mini</div>
+                            <div class="size-desc">Mały rozmiar, idealny na pojedyncze osoby</div>
+                        </div>
+                        <div class="size-option" data-size="normal">
+                            <div class="size-name">Normal</div>
+                            <div class="size-desc">Standardowy rozmiar dla 2-4 osób</div>
+                        </div>
+                        <div class="size-option" data-size="max">
+                            <div class="size-name">Max</div>
+                            <div class="size-desc">Duży rozmiar dla większych grup</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ceny dla poszczególnych rozmiarów (opcjonalnie)</label>
+                    <div class="price-input-hint">Wpisz cenę tylko dla rozmiarów, które oferujesz. Cena dla wybranego rozmiaru jest wymagana.</div>
+                    <div class="price-inputs-container">
+                        <div class="price-input-group">
+                            <label for="edit-price-mini">Cena (Mini):</label>
+                            <input type="number" id="edit-price-mini" step="0.01" min="0">
+                        </div>
+                        <div class="price-input-group">
+                            <label for="edit-price-normal">Cena (Normal):</label>
+                            <input type="number" id="edit-price-normal" step="0.01" min="0">
+                        </div>
+                        <div class="price-input-group">
+                            <label for="edit-price-max">Cena (Max):</label>
+                            <input type="number" id="edit-price-max" step="0.01" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group"><label for="edit-product-image">Zdjęcie produktu</label><input type="file" id="edit-product-image" accept="image/*"></div>
+                <button type="submit">Zapisz zmiany</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- --- MODAL ZMIANY ZDJĘCIA PRODUKTU --- -->
+    <div id="changeImageModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal-btn" id="closeImageModalBtn">&times;</span>
+            <h3>Zmień zdjęcie produktu</h3>
+            <form id="changeImageForm">
+                <input type="hidden" id="image-product-id">
+                <div class="form-group"><label for="product-new-image">Wybierz nowe zdjęcie</label><input type="file" id="product-new-image" accept="image/*" required></div>
+                <button type="submit">Zmień zdjęcie</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- --- MODAL POTWIERDZENIA USUNIĘCIA --- -->
+    <div id="deleteProductModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal-btn" id="closeDeleteModalBtn">&times;</span>
+            <h3>Usuń produkt</h3>
+            <p>Czy na pewno chcesz usunąć ten produkt? Ta operacja jest nieodwracalna.</p>
+            <div class="delete-confirmation">
+                <button id="cancelDeleteBtn" class="cancel-delete">Anuluj</button>
+                <button id="confirmDeleteBtn" class="confirm-delete">Usuń</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- --- INDEKATOR ŁADOWANIA --- -->
+    <div id="loadingIndicator" class="loading-indicator">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- BROADCAST CHANNEL LOGIC ---
+        const authChannel = new BroadcastChannel('auth_channel_upieczemy');
+        authChannel.onmessage = (event) => {
+            if (event.data && event.data.type === 'logout') {
+                console.log('Otrzymano sygnał wylogowania z innej karty.');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                showNotification('Zostałeś wylogowany na innej karcie. Przekierowuję...', 'info');
+                setTimeout(() => window.location.href = '/', 2000);
+            }
+        };
+
+        const loginBtn = document.getElementById('loginBtn');
+        const kontoBtn = document.getElementById('kontoBtn');
+        const profilePic = document.getElementById('profile-pic');
+        const profilePicInput = document.getElementById('profile-pic-input');
+        const profilePicWrapper = document.querySelector('.profile-picture-wrapper');
+        const welcomeMsgSpan = document.getElementById('user-name');
+        const citySearchInput = document.getElementById('citySearchInput');
+        const citySuggestionsBox = document.getElementById('city-suggestions-box');
+        const locationSearchContainer = document.querySelector('.location-search');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        const myProductsSection = document.getElementById('my-products-section');
+        const favoritesSection = document.getElementById('favorites-section');
+        const paymentsSection = document.getElementById('payments-section');
+        const purchasedSection = document.getElementById('purchased-section');
+        const soldSection = document.getElementById('sold-section');
+        const myOrdersSection = document.getElementById('my-orders-section');
+
+        const productsGrid = document.getElementById('products-grid');
+        const favoritesGrid = document.getElementById('favorites-grid');
+        const paymentsGrid = document.getElementById('payments-grid');
+        const purchasedGrid = document.getElementById('purchased-grid');
+        const soldGrid = document.getElementById('sold-grid');
+        const ordersGrid = document.getElementById('orders-grid');
+
+        const addProductBtn = document.getElementById('addProductBtn');
+        const myProductsBtn = document.getElementById('myProductsBtn');
+        const purchasedBtn = document.getElementById('purchasedBtn');
+        const soldBtn = document.getElementById('soldBtn');
+        const paymentsLink = document.getElementById('paymentsLink');
+        const userDataLink = document.getElementById('userDataLink');
+
+        // Nowe elementy dla modali edycji
+        const addProductModal = document.getElementById('addProductModal');
+        const editProductModal = document.getElementById('editProductModal');
+        const changeImageModal = document.getElementById('changeImageModal');
+        const deleteProductModal = document.getElementById('deleteProductModal');
+        
+        // Quick View Modal elements
+        const quickViewModal = document.getElementById('quickViewModal');
+        const quickViewClose = document.querySelector('.quick-view-close');
+        const quickViewImage = document.getElementById('quickViewImage');
+        const quickViewTitle = document.getElementById('quickViewTitle');
+        const quickViewPrice = document.getElementById('quickViewPrice');
+        const quickViewSize = document.getElementById('quickViewSize');
+        const quickViewDescription = document.getElementById('quickViewDescription');
+        const quickViewEdit = document.getElementById('quickViewEdit');
+        const quickViewDelete = document.getElementById('quickViewDelete');
+        const quickViewChangeImage = document.getElementById('quickViewChangeImage');
+        
+        // ID produktu dla quick view
+        let currentQuickViewProductId = null;
+        
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+        const closeImageModalBtn = document.getElementById('closeImageModalBtn');
+        const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
+        
+        const addProductForm = document.getElementById('addProductForm');
+        const editProductForm = document.getElementById('editProductForm');
+        const changeImageForm = document.getElementById('changeImageForm');
+        
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        
+        // ID produktu do usunięcia
+        let productToDelete = null;
+
+        // Funkcje do obsługi rozmiaru
+        function setupSizeSelector(modalType = 'add') {
+            const sizeOptions = document.querySelectorAll(`#${modalType}ProductModal .size-option`);
+            
+            sizeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Usuń klasę selected ze wszystkich opcji
+                    sizeOptions.forEach(opt => opt.classList.remove('selected'));
+                    // Dodaj klasę selected do klikniętej opcji
+                    option.classList.add('selected');
+                });
+            });
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showNotification('Nie jesteś zalogowany. Przekierowuję na stronę główną...', 'error');
+            setTimeout(() => window.location.href = '/', 2000);
+            return;
+        }
+
+        // Funkcja do pokazywania/ukrywania wskaźnika ładowania
+        function showLoading() {
+            loadingIndicator.style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            loadingIndicator.style.display = 'none';
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div'); 
+            notification.className = `notification ${type}`; 
+            notification.textContent = message; 
+            document.body.appendChild(notification);
+            setTimeout(() => { 
+                notification.style.opacity = '1'; 
+                notification.style.transform = 'translateX(0)'; 
+            }, 10);
+            setTimeout(() => { 
+                notification.style.opacity = '0'; 
+                notification.style.transform = 'translateX(100%)'; 
+                setTimeout(() => notification.remove(), 300); 
+            }, 3000);
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('token'); 
+            localStorage.removeItem('user');
+            authChannel.postMessage({ type: 'logout' });
+            showNotification('Wylogowano pomyślnie.', 'success');
+            setTimeout(() => window.location.href = '/', 1500);
+        }
+
+        // --- NOWA, SKONSOLIDOWANA FUNKCJA DO INICJALIZACJI UI ---
+        function initializeUI() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            console.log("Inicjalizacja UI. Użytkownik z localStorage:", user); // DEBUG
+
+            if (user && user.nazwaUzytkownika) {
+                console.log("Ustawiam nazwę użytkownika:", user.nazwaUzytkownika); // DEBUG
+                kontoBtn.textContent = user.nazwaUzytkownika;
+                welcomeMsgSpan.textContent = user.nazwaUzytkownika;
+            } else {
+                console.log("Nie znaleziono nazwy użytkownika w localStorage."); // DEBUG
+                kontoBtn.textContent = 'Konto';
+                welcomeMsgSpan.textContent = '...';
+            }
+        }
+
+        // --- POPRAWIONA FUNKCJA DO POBIERANIA DANYCH UŻYTKOWNIKA ---
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/profile', { headers: { 'x-auth-token': token } });
+                if (!response.ok) throw new Error('Błąd serwera.');
+                const user = await response.json();
+                console.log('Odpowiedź serwera:', user); // <-- POPRAWKA: 'user' zamiast 'result'
+
+                console.log("Otrzymano dane użytkownika z serwera:", user); // DEBUG
+                if (user && user.nazwaUzytkownika) { 
+                    welcomeMsgSpan.textContent = user.nazwaUzytkownika; 
+                    kontoBtn.textContent = user.nazwaUzytkownika;
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+                
+                // --- POPRAWIONA LOGIKA DLA ZDJĘCIA PROFILOWEGO ---
+                let avatarUrl;
+                if (user.zdjecieProfilowe) {
+                    if (user.zdjecieProfilowe.startsWith('http')) {
+                        avatarUrl = user.zdjecieProfilowe;
+                    } else {
+                        avatarUrl = `/uploads/${user.zdjecieProfilowe}`;
+                    }
+                } else {
+                    avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nazwaUzytkownika)}&background=FF80AB&color=fff&size=120`;
+                }
+                profilePic.src = avatarUrl;
+            } catch (error) { 
+                console.error('Błąd danych użytkownika:', error); 
+                showNotification('Nie udało się załadować danych profilu.', 'error'); 
+            }
+        };
+        
+      
+        
+        // --- ZMODYFIKOWANA FUNKCJA DO POBIERANIA PRODUKTÓW Z QUICK VIEW --- 
+        async function fetchUserProducts() {
+            try {
+                showLoading();
+                const response = await fetch('http://localhost:5000/api/products', { headers: { 'x-auth-token': token } });
+                if (!response.ok) throw new Error('Błąd serwera.');
+                const products = await response.json();
+                
+                if (products.length > 0) {
+                    productsGrid.innerHTML = products.map(p => {
+                        // POPRAWKA: Użyj p.zdjecie zamiast p.zdjecia
+                        const mainImage = p.zdjecie 
+                            ? p.zdjecie 
+                            : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
+                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        return `
+                            <div class="item-card" data-product-id="${p._id}" data-product-name="${p.nazwa}" data-product-description="${p.opis}" data-product-price="${p.cena}" data-product-size="${p.rozmiar || 'normal'}" data-product-image="${mainImage}">
+                                <div class="product-image-container">
+                                    <img src="${mainImage}" alt="${p.nazwa}">
+                                    <div class="product-image-overlay"></div>
+                                    <button class="change-image-btn-overlay" data-product-id="${p._id}">Zmień</button>
+                                </div>
+                                <div class="product-details-container">
+                                    <h4>${p.nazwa}</h4>
+                                    <div class="product-size">Rozmiar: ${sizeLabel}</div>
+                                    <p>${p.opis}</p>
+                                    <div class="price">${p.cena.toFixed(2)} zł</div>
+                                    <div class="item-actions">
+                                        <button class="edit-btn" data-product-id="${p._id}">Edytuj</button>
+                                        <button class="delete-btn" data-product-id="${p._id}">Usuń</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else { 
+                    productsGrid.innerHTML = `<p style="text-align: center; color: #888; grid-column: 1 / -1;">Nie dodałeś jeszcze żadnych produktów.</p>`; 
+                }
+            } catch (error) { 
+                console.error('Błąd produktów:', error); 
+                productsGrid.innerHTML = `<p style="color: red; text-align: center; grid-column: 1 / -1;">Wystąpił błąd.</p>`; 
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // --- DODANA BRAKUJĄCA FUNKCJA ---
+        async function fetchFavoriteProducts() {
+            try {
+                showLoading();
+                const response = await fetch('http://localhost:5000/api/products/favorites', { headers: { 'x-auth-token': token } });
+                if (!response.ok) throw new Error('Błąd serwera.');
+                const products = await response.json();
+                
+                if (products.length > 0) {
+                    favoritesGrid.innerHTML = products.map(p => {
+                        // POPRAWKA: Użyj p.zdjecie zamiast p.zdjecia
+                        const mainImage = p.zdjecie 
+                            ? p.zdjecie 
+                            : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
+                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        return `
+                            <div class="item-card">
+                                <img src="${mainImage}" alt="${p.nazwa}">
+                                <h4>${p.nazwa}</h4>
+                                <div class="product-size">Rozmiar: ${sizeLabel}</div>
+                                <p>${p.opis}</p>
+                                <div class="price">${p.cena.toFixed(2)} zł</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else { 
+                    favoritesGrid.innerHTML = `<p style="text-align: center; color: #888;">Nie masz jeszcze żadnych ulubionych produktów.</p>`; 
+                }
+            } catch (error) { 
+                console.error('Błąd ulubionych produktów:', error); 
+                favoritesGrid.innerHTML = `<p style="color: red; text-align: center;">Wystąpił błąd.</p>`; 
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function fetchUserPayments() {
+            try {
+                showLoading();
+                const response = await fetch('http://localhost:5000/api/payments/user', { headers: { 'x-auth-token': token } });
+                if (!response.ok) { throw new Error('Błąd serwera.'); }
+                const payments = await response.json();
+                if (payments.length > 0) {
+                    // POPRAWKA: Użyj p.produkt.zdjecie zamiast p.produkt.zdjecia
+                    paymentsGrid.innerHTML = payments.map(p => {
+                        const sizeLabel = p.produkt.rozmiar ? p.produkt.rozmiar.charAt(0).toUpperCase() + p.produkt.rozmiar.slice(1) : 'Normal';
+                        return `<div class="item-card"><img src="${p.produkt.zdjecie || 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia'}" alt="${p.produkt.nazwa}"><h4>${p.produkt.nazwa}</h4><div class="product-size">Rozmiar: ${sizeLabel}</div><p>Kupujący: ${p.kupujacy ? p.kupujacy.nazwaUzytkownika : 'Nieznany'}</p><div class="price">${p.kwota.toFixed(2)} zł</div><div class="status">Status: ${p.status || 'Przetwarzany'}</div><div class="payment-date">Data: ${new Date(p.dataPlatnosci).toLocaleDateString('pl-PL')}</div></div>`;
+                    }).join('');
+                } else { paymentsGrid.innerHTML = `<p style="text-align: center; color: #888;">Nie masz jeszcze żadnych płatności.</p>`; }
+            } catch (error) { console.error('Błąd płatności:', error); paymentsGrid.innerHTML = `<p style="color: red; text-align: center;">Wystąpił błąd podczas ładowania.</p>`; } finally {
+                hideLoading();
+            }
+        }
+
+        async function fetchPurchasedProducts() {
+            try {
+                showLoading();
+                const response = await fetch('http://localhost:5000/api/products/purchased', { headers: { 'x-auth-token': token } });
+                if (!response.ok) { throw new Error('Błąd serwera.'); }
+                const products = await response.json();
+                if (products.length > 0) {
+                    purchasedGrid.innerHTML = products.map(p => {
+                        // POPRAWKA: Użyj p.zdjecie zamiast p.zdjecia
+                        const mainImage = p.zdjecie 
+                            ? p.zdjecie 
+                            : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
+                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        return `
+                            <div class="item-card">
+                                <img src="${mainImage}" alt="${p.nazwa}">
+                                <h4>${p.nazwa}</h4>
+                                <div class="product-size">Rozmiar: ${sizeLabel}</div>
+                                <p>Sprzedawca: ${p.sprzedawca.nazwaUzytkownika}</p>
+                                <div class="price">${p.cena.toFixed(2)} zł</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else { purchasedGrid.innerHTML = `<p style="text-align: center; color: #888;">Nie kupiłeś jeszcze żadnych produktów.</p>`; }
+            } catch (error) { console.error('Błąd produktów kupionych:', error); purchasedGrid.innerHTML = `<p style="color: red; text-align: center;">Wystąpił błąd podczas ładowania.</p>`; } finally {
+                hideLoading();
+            }
+        }
+
+        async function fetchSoldProducts() {
+            try {
+                showLoading();
+                const response = await fetch('http://localhost:5000/api/products/sold', { headers: { 'x-auth-token': token } });
+                if (!response.ok) { throw new Error('Błąd serwera.'); }
+                const products = await response.json();
+                if (products.length > 0) {
+                    soldGrid.innerHTML = products.map(p => {
+                        // POPRAWKA: Użyj p.zdjecie zamiast p.zdjecia
+                        const mainImage = p.zdjecie 
+                            ? p.zdjecie 
+                            : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
+                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        return `
+                            <div class="item-card">
+                                <img src="${mainImage}" alt="${p.nazwa}">
+                                <h4>${p.nazwa}</h4>
+                                <div class="product-size">Rozmiar: ${sizeLabel}</div>
+                                <p>Kupujący: ${p.kupujacy.nazwaUzytkownika}</p>
+                                <div class="price">${p.cena.toFixed(2)} zł</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else { soldGrid.innerHTML = `<p style="text-align: center; color: #888;">Nie sprzedałeś jeszcze żadnych produktów.</p>`; }
+            } catch (error) { console.error('Błąd produktów sprzedanych:', error); soldGrid.innerHTML = `<p style="color: red; text-align: center;">Wystąpił błąd podczas ładowania.</p>`; } finally {
+                hideLoading();
+            }
+        }
+
+        async function fetchUserOrders() {
+            try {
+                showLoading();
+                const response = await fetch('http://localhost:5000/api/orders/user', { headers: { 'x-auth-token': token } });
+                if (!response.ok) { console.error('Błąd zamówień:', response.statusText); return; }
+                const orders = await response.json();
+                if (orders.length > 0) {
+                    myOrdersSection.classList.remove('hidden');
+                    // POPRAWKA: Użyj o.produkt.zdjecie zamiast o.produkt.zdjecia
+                    ordersGrid.innerHTML = orders.map(o => {
+                        const sizeLabel = o.produkt.rozmiar ? o.produkt.rozmiar.charAt(0).toUpperCase() + o.produkt.rozmiar.slice(1) : 'Normal';
+                        return `<div class="item-card"><h4>Zamówienie #${o._id.slice(-6)}</h4><p>Produkt: ${o.produkt.nazwa}</p><div class="product-size">Rozmiar: ${sizeLabel}</div><div class="price">${o.produkt.cena.toFixed(2)} zł</div><div class="status">Status: ${o.status || 'Przygotowywanie'}</div></div>`;
+                    }).join('');
+                }
+            } catch (error) { console.error('Błąd zamówień:', error); } finally {
+                hideLoading();
+            }
+        }
+
+        // --- FUNKCJE DO OBSŁUGI QUICK VIEW ---
+        function openQuickView(productId) {
+            const card = document.querySelector(`.item-card[data-product-id="${productId}"]`);
+            if (!card) return;
+            
+            const name = card.dataset.productName;
+            const description = card.dataset.productDescription;
+            const price = parseFloat(card.dataset.productPrice);
+            const size = card.dataset.productSize;
+            const image = card.dataset.productImage;
+            
+            currentQuickViewProductId = productId;
+            
+            quickViewTitle.textContent = name;
+            quickViewDescription.textContent = description;
+            quickViewPrice.textContent = `${price.toFixed(2)} zł`;
+            quickViewSize.textContent = `Rozmiar: ${size.charAt(0).toUpperCase() + size.slice(1)}`;
+            quickViewImage.src = image;
+            quickViewImage.alt = name;
+            
+            quickViewModal.classList.add('active');
+        }
+        
+        function closeQuickView() {
+            quickViewModal.classList.remove('active');
+            currentQuickViewProductId = null;
+        }
+
+        // --- FUNKCJE DO OBSŁUGI MODALI EDYCJI ---
+        async function openEditModal(productId) {
+            // --- DODANE ZABEZPIECZENIE ---
+            if (!productId) {
+                console.error('Próba otwarcia edycji bez ID produktu.');
+                showNotification('Wystąpił błąd. Spróbuj ponownie.', 'error');
+                return;
+            }
+            // ---------------------------------
+
+            console.log("Attempting to edit product with ID:", productId); // DEBUG
+            try {
+                showLoading();
+                const response = await fetch(`http://localhost:5000/api/products/${productId}`, { 
+                    headers: { 'x-auth-token': token } 
+                });
+                
+                // If the response is not ok, create a detailed error object
+                if (!response.ok) {
+                    let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorBody = await response.json();
+                        errorDetail = errorBody.message || errorDetail;
+                    } catch (e) {
+                        // Ignore if response body is not JSON
+                    }
+                    const error = new Error(errorDetail);
+                    error.status = response.status;
+                    throw error;
+                }
+
+                const product = await response.json();
+                
+                // Wypełnij formularz danymi produktu
+                document.getElementById('edit-product-id').value = product._id;
+                document.getElementById('edit-product-name').value = product.nazwa;
+                document.getElementById('edit-product-description').value = product.opis;
+                
+                // Ustaw rozmiar produktu
+                const sizeOptions = document.querySelectorAll('#editProductModal .size-option');
+                sizeOptions.forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.dataset.size === (product.rozmiar || 'normal')) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                // Ustaw ceny dla każdego rozmiaru
+                const ceny = product.ceny || {};
+                document.getElementById('edit-price-mini').value = ceny.mini || '';
+                document.getElementById('edit-price-normal').value = ceny.normal || '';
+                document.getElementById('edit-price-max').value = ceny.max || '';
+                
+                // Nie wypełniamy pola zdjęcia, ponieważ jest to teraz plik, a nie URL
+                
+                // Pokaż modal
+                editProductModal.classList.remove('hidden');
+            } catch (error) {
+                console.error('Błąd pobierania produktu do edycji:', error);
+                
+                let userMessage = 'Nie udało się pobrać danych produktu.';
+                if (error.status === 404) {
+                    userMessage = 'Produkt nie istnieje. Lista została odświeżona.';
+                    // Automatycznie odśwież listę, aby usunąć nieistniejący produkt
+                    fetchUserProducts(); 
+                } else if (error.status === 401 || error.status === 403) {
+                    userMessage = 'Brak uprawnień do edycji tego produktu.';
+                } else if (error.status >= 500) {
+                    userMessage = 'Wystąpił wewnętrzny błąd serwera. Spróbuj ponownie później.';
+                }
+                showNotification(userMessage, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function openChangeImageModal(productId) {
+            document.getElementById('image-product-id').value = productId;
+            document.getElementById('product-new-image').value = '';
+            changeImageModal.classList.remove('hidden');
+        }
+
+        function openDeleteModal(productId) {
+            productToDelete = productId;
+            deleteProductModal.classList.remove('hidden');
+        }
+
+        // --- OBSŁUGA ZDARZEŃ DLA MODALI ---
+        loginBtn.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); });
+
+        // Funkcja do przekierowania na stronę z użytkownikami w danym mieście
+        function redirectToCityPage(city) {
+            if (!city) return;
+            console.log(`Przekierowuję do strony z użytkownikami w mieście: ${city}`);
+            window.location.href = `/uzytkownicy-w-miescie.html?city=${encodeURIComponent(city)}`;
+        }
+
+        const fetchCitySuggestions = async (query) => {
+            if (query.length < 2) { citySuggestionsBox.style.display = 'none'; return; }
+            try {
+                const response = await fetch(`http://localhost:5000/api/suggestions?q=${encodeURIComponent(query)}`);
+                const suggestions = await response.json();
+                citySuggestionsBox.innerHTML = '';
+                if (suggestions.length > 0) {
+                    suggestions.forEach(city => {
+                        const item = document.createElement('div'); 
+                        item.classList.add('suggestion-item'); 
+                        item.textContent = city;
+                        // POPRAWIONE PRZEKIEROWANIE - użycie funkcji redirectToCityPage
+                        item.addEventListener('click', () => { 
+                            redirectToCityPage(city);
+                        });
+                        citySuggestionsBox.appendChild(item);
+                    });
+                    citySuggestionsBox.style.display = 'block';
+                } else { citySuggestionsBox.style.display = 'none'; }
+            } catch (error) { console.error('Błąd podczas pobierania sugestii:', error); citySuggestionsBox.style.display = 'none'; }
+        };
+        
+        let cityDebounceTimer; 
+        citySearchInput.addEventListener('input', (event) => { 
+            const query = event.target.value; 
+            clearTimeout(cityDebounceTimer); 
+            cityDebounceTimer = setTimeout(() => fetchCitySuggestions(query), 300); 
+        });
+        
+        // POPRAWIONE PRZEKIEROWANIE - użycie funkcji redirectToCityPage
+        citySearchInput.addEventListener('keyup', (event) => { 
+            if (event.key === 'Enter') { 
+                const city = citySearchInput.value.trim(); 
+                if (city) { 
+                    redirectToCityPage(city);
+                } 
+            } 
+        });
+        
+        document.addEventListener('click', (event) => { 
+            if (!citySearchInput.contains(event.target) && !citySuggestionsBox.contains(event.target)) { 
+                citySuggestionsBox.style.display = 'none'; 
+            } 
+        });
+        
+        locationSearchContainer.addEventListener('click', () => { citySearchInput.focus(); });
+
+        function toggleSection(sectionToToggle, fetchFunction) {
+            const allSections = [myProductsSection, favoritesSection, paymentsSection, purchasedSection, soldSection];
+            allSections.forEach(section => { if (section !== sectionToToggle) { section.classList.add('hidden'); } });
+            if (sectionToToggle.classList.contains('hidden')) { 
+                fetchFunction(); 
+                sectionToToggle.classList.remove('hidden'); 
+            } else { 
+                sectionToToggle.classList.add('hidden'); 
+            }
+        }
+        
+        myProductsBtn.addEventListener('click', () => toggleSection(myProductsSection, fetchUserProducts));
+        purchasedBtn.addEventListener('click', () => toggleSection(purchasedSection, fetchPurchasedProducts));
+        soldBtn.addEventListener('click', () => toggleSection(soldSection, fetchSoldProducts));
+        userDataLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'edit-profile.html';});
+        paymentsLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'platnosci.html';});
+        
+        // Obsługa modali
+        addProductBtn.addEventListener('click', () => {
+            addProductModal.classList.remove('hidden');
+            // Zresetuj formularz i ustaw domyślny rozmiar
+            document.getElementById('addProductForm').reset();
+            const sizeOptions = document.querySelectorAll('#addProductModal .size-option');
+            sizeOptions.forEach(option => {
+                option.classList.remove('selected');
+                if (option.dataset.size === 'normal') {
+                    option.classList.add('selected');
+                }
+            });
+        });
+        
+        closeModalBtn.addEventListener('click', () => addProductModal.classList.add('hidden'));
+        closeEditModalBtn.addEventListener('click', () => editProductModal.classList.add('hidden'));
+        closeImageModalBtn.addEventListener('click', () => changeImageModal.classList.add('hidden'));
+        closeDeleteModalBtn.addEventListener('click', () => deleteProductModal.classList.add('hidden'));
+        
+        // Zamknięcie modali po kliknięciu w tło
+        addProductModal.addEventListener('click', (e) => { if (e.target === addProductModal) { addProductModal.classList.add('hidden'); } });
+        editProductModal.addEventListener('click', (e) => { if (e.target === editProductModal) { editProductModal.classList.add('hidden'); } });
+        changeImageModal.addEventListener('click', (e) => { if (e.target === changeImageModal) { changeImageModal.classList.add('hidden'); } });
+        deleteProductModal.addEventListener('click', (e) => { if (e.target === deleteProductModal) { deleteProductModal.classList.add('hidden'); } });
+        
+        // Obsługa Quick View Modal
+        quickViewClose.addEventListener('click', closeQuickView);
+        quickViewModal.addEventListener('click', (e) => {
+            if (e.target === quickViewModal) {
+                closeQuickView();
+            }
+        });
+        
+        // Przyciski w Quick View
+        quickViewEdit.addEventListener('click', () => {
+            // ZAPAMIĘTAJ ID PRZED ZAMKNIĘCIEM MODALA!
+            const productIdToEdit = currentQuickViewProductId; 
+            
+            // Teraz zamknij modal
+            closeQuickView(); 
+            
+            // A na końcu otwórz edycję z zapamiętanym ID
+            openEditModal(productIdToEdit);
+        });
+
+        quickViewDelete.addEventListener('click', () => {
+            // Zastosuj tę samą logikę dla przycisku "Usuń"
+            const productIdToDelete = currentQuickViewProductId;
+            closeQuickView();
+            openDeleteModal(productIdToDelete);
+        });
+
+        quickViewChangeImage.addEventListener('click', () => {
+            // I dla przycisku "Zmień zdjęcie"
+            const productIdToChangeImage = currentQuickViewProductId;
+            closeQuickView();
+            openChangeImageModal(productIdToChangeImage);
+        });
+        
+        // --- ZMODYFIKOWANA OBSŁUGA KLIKNIĘĆ W GRIDZIE PRODUKTÓW ---
+        productsGrid.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.edit-btn');
+            const deleteBtn = e.target.closest('.delete-btn');
+            const imageContainer = e.target.closest('.product-image-container');
+            const changeImageBtn = e.target.closest('.change-image-btn-overlay');
+            const itemCard = e.target.closest('.item-card');
+
+            if (editBtn) {
+                e.stopPropagation(); // Zapobiegaj otwarciu quick view
+                const productId = editBtn.getAttribute('data-product-id');
+                openEditModal(productId);
+            } else if (deleteBtn) {
+                e.stopPropagation(); // Zapobiegaj otwarciu quick view
+                const productId = deleteBtn.getAttribute('data-product-id');
+                openDeleteModal(productId);
+            } else if (changeImageBtn) {
+                e.stopPropagation(); // Zapobiegaj otwarciu quick view
+                const productId = changeImageBtn.getAttribute('data-product-id');
+                openChangeImageModal(productId);
+            } else if (imageContainer || itemCard) {
+                // Otwórz quick view, jeśli kliknięto w obrazek lub kartę produktu
+                const productId = itemCard.getAttribute('data-product-id');
+                openQuickView(productId);
+            }
+        });
+        
+        // Obsługa formularzy dodawania produktu
+      // --- OBSŁUGA FORMULARZY (POPRAWIONA WERSJA) ---
+
+// Obsługa formularza dodawania produktu
+addProductForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading();
+    
+    const name = document.getElementById('product-name').value;
+    const description = document.getElementById('product-description').value;
+    const imageFile = document.getElementById('product-image').files[0];
+    const selectedSize = document.querySelector('#addProductModal .size-option.selected');
+    const size = selectedSize ? selectedSize.dataset.size : 'normal';
+    
+    // Pobierz ceny dla każdego rozmiaru
+    const priceMini = parseFloat(document.getElementById('price-mini').value) || 0;
+    const priceNormal = parseFloat(document.getElementById('price-normal').value) || 0;
+    const priceMax = parseFloat(document.getElementById('price-max').value) || 0;
+    
+    // Sprawdź, czy cena dla wybranego rozmiaru jest ustawiona
+    let finalPrice = 0;
+    if (size === 'mini') {
+        finalPrice = priceMini;
+        if (!priceMini || priceMini <= 0) {
+            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
+            hideLoading();
+            return;
+        }
+    } else if (size === 'normal') {
+        finalPrice = priceNormal;
+        if (!priceNormal || priceNormal <= 0) {
+            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
+            hideLoading();
+            return;
+        }
+    } else if (size === 'max') {
+        finalPrice = priceMax;
+        if (!priceMax || priceMax <= 0) {
+            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
+            hideLoading();
+            return;
+        }
+    }
+    
+    // Tworzymy obiekt z cenami
+    const ceny = {};
+    if (priceMini > 0) ceny.mini = priceMini;
+    if (priceNormal > 0) ceny.normal = priceNormal;
+    if (priceMax > 0) ceny.max = priceMax;
+    
+    // Tworzymy obiekt FormData do wysłania pliku i danych tekstowych
+    const formData = new FormData();
+    formData.append('nazwa', name);
+    formData.append('opis', description);
+    formData.append('cena', finalPrice);
+    formData.append('rozmiar', size);
+    formData.append('ceny', JSON.stringify(ceny));
+    if (imageFile) {
+        formData.append('productImage', imageFile); // Klucz 'productImage' musi być taki sam jak w backendzie!
+    }
+    
+    try {
+        const res = await fetch('http://localhost:5000/api/products', { 
+            method: 'POST', 
+            headers: { 
+                'x-auth-token': token 
+                // Nie ustawiamy 'Content-Type' - przeglądarka zrobi to automatycznie dla FormData
+            }, 
+            body: formData // Wysyłamy FormData zamiast JSON
+        });
+        
+        if (!res.ok) throw new Error('Błąd serwera');
+        
+        showNotification('Produkt dodany pomyślnie!', 'success');
+        addProductForm.reset(); 
+        addProductModal.classList.add('hidden');
+        
+        await fetchUserProducts();
+        myProductsSection.classList.remove('hidden');
+        
+    } catch (error) { 
+        console.error(error); 
+        showNotification('Błąd podczas dodawania produktu.', 'error'); 
+    } finally {
+        hideLoading();
+    }
+});
+
+// Obsługa formularza edycji produktu
+editProductForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading();
+    
+    const productId = document.getElementById('edit-product-id').value;
+    const name = document.getElementById('edit-product-name').value;
+    const description = document.getElementById('edit-product-description').value;
+    const imageFile = document.getElementById('edit-product-image').files[0];
+    const selectedSize = document.querySelector('#editProductModal .size-option.selected');
+    const size = selectedSize ? selectedSize.dataset.size : 'normal';
+    
+    // Pobierz ceny dla każdego rozmiaru
+    const priceMini = parseFloat(document.getElementById('edit-price-mini').value) || 0;
+    const priceNormal = parseFloat(document.getElementById('edit-price-normal').value) || 0;
+    const priceMax = parseFloat(document.getElementById('edit-price-max').value) || 0;
+    
+    // Sprawdź, czy cena dla wybranego rozmiaru jest ustawiona
+    let finalPrice = 0;
+    if (size === 'mini') {
+        finalPrice = priceMini;
+        if (!priceMini || priceMini <= 0) {
+            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
+            hideLoading();
+            return;
+        }
+    } else if (size === 'normal') {
+        finalPrice = priceNormal;
+        if (!priceNormal || priceNormal <= 0) {
+            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
+            hideLoading();
+            return;
+        }
+    } else if (size === 'max') {
+        finalPrice = priceMax;
+        if (!priceMax || priceMax <= 0) {
+            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
+            hideLoading();
+            return;
+        }
+    }
+    
+    // Tworzymy obiekt z cenami
+    const ceny = {};
+    if (priceMini > 0) ceny.mini = priceMini;
+    if (priceNormal > 0) ceny.normal = priceNormal;
+    if (priceMax > 0) ceny.max = priceMax;
+    
+    const formData = new FormData();
+    formData.append('nazwa', name);
+    formData.append('opis', description);
+    formData.append('cena', finalPrice);
+    formData.append('rozmiar', size);
+    formData.append('ceny', JSON.stringify(ceny));
+    if (imageFile) {
+        formData.append('productImage', imageFile);
+    }
+    
+    try {
+        const response = await fetch(`http://localhost:5000/api/products/${productId}`, { 
+            method: 'PUT', 
+            headers: { 
+                'x-auth-token': token 
+            }, 
+            body: formData 
+        });
+        
+        if (!response.ok) {
+            let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+            try {
+                const errorBody = await response.json();
+                errorDetail = errorBody.message || errorDetail;
+            } catch (e) { /* Ignore */ }
+            throw new Error(errorDetail);
+        }
+        
+        showNotification('Produkt zaktualizowany pomyślnie!', 'success');
+        editProductModal.classList.add('hidden');
+        
+        await fetchUserProducts();
+        
+    } catch (error) { 
+        console.error(error); 
+        showNotification('Błąd podczas aktualizacji produktu.', 'error'); 
+    } finally {
+        hideLoading();
+    }
+});
+
+// Obsługa formularza zmiany zdjęcia (już była poprawna, ale dla pewności wklejam jeszcze raz)
+changeImageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoading();
+    
+    const productId = document.getElementById('image-product-id').value;
+    const fileInput = document.getElementById('product-new-image');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showNotification('Wybierz plik zdjęcia.', 'error');
+        hideLoading();
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('productImage', file); // Klucz musi się zgadzać z backendem
+    
+    try {
+        const response = await fetch(`http://localhost:5000/api/products/${productId}/image`, { 
+            method: 'PUT', 
+            headers: { 
+                'x-auth-token': token 
+            }, 
+            body: formData 
+        });
+        
+        if (!response.ok) {
+            let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+            try {
+                const errorBody = await response.json();
+                errorDetail = errorBody.message || errorDetail;
+            } catch (e) { /* Ignore */ }
+            throw new Error(errorDetail);
+        }
+        
+        showNotification('Zdjęcie produktu zaktualizowane pomyślnie!', 'success');
+        changeImageModal.classList.add('hidden');
+        
+        await fetchUserProducts();
+        
+    } catch (error) { 
+        console.error(error); 
+        showNotification('Błąd podczas aktualizacji zdjęcia produktu.', 'error'); 
+    } finally {
+        hideLoading();
+    }
+});
+        
+        // Obsługa przycisków usuwania
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (!productToDelete) return;
+            showLoading();
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/products/${productToDelete}`, { 
+                    method: 'DELETE', 
+                    headers: { 'x-auth-token': token } 
+                });
+                
+                if (!response.ok) {
+                    let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorBody = await response.json();
+                        errorDetail = errorBody.message || errorDetail;
+                    } catch (e) { /* Ignore */ }
+                    throw new Error(errorDetail);
+                }
+                
+                showNotification('Produkt usunięty pomyślnie!', 'success');
+                deleteProductModal.classList.add('hidden');
+                productToDelete = null;
+                
+                await fetchUserProducts();
+                
+            } catch (error) { 
+                console.error(error); 
+                showNotification('Błąd podczas usuwania produktu.', 'error'); 
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteProductModal.classList.add('hidden');
+            productToDelete = null;
+        });
+
+        // --- POPRAWIONA OBSŁUGA ZMIANY ZDJĘCIA PROFILOWEGO ---
+        profilePicWrapper.addEventListener('click', () => profilePicInput.click());
+        profilePicInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0]; 
+            if (file) {
+                showLoading();
+                const reader = new FileReader(); 
+                reader.onload = (e) => { profilePic.src = e.target.result; }; 
+                reader.readAsDataURL(file);
+                
+                const formData = new FormData(); 
+                formData.append('profilePicture', file);
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/auth/profile-picture', { 
+                        method: 'PUT', 
+                        headers: { 'x-auth-token': token }, 
+                        body: formData 
+                    });
+                    const result = await response.json();
+                    
+                    if (response.ok) { 
+                        showNotification('Zdjęcie zaktualizowane!', 'success'); 
+                        // Natychmiastowa aktualizacja obrazka na nowy URL z Cloudinary
+                        profilePic.src = result.zdjecieProfilowe; 
+                    } else { 
+                        showNotification(result.komunikat || 'Błąd.', 'error'); 
+                        // W razie błędu, przywróć oryginalne zdjęcie
+                        fetchUserData(); 
+                    }
+                } catch (error) { 
+                    console.error(error); 
+                    showNotification('Problem z połączeniem.', 'error'); 
+                    fetchUserData(); 
+                } finally {
+                    hideLoading();
+                }
+            }
+        });
+
+        // --- GŁÓWNY PRZEBIEG SKRYPTU ---
+        initializeUI();
+        fetchUserData();
+        fetchUserOrders();
+        fetchFavoriteProducts();
+        
+        // Inicjalizacja selektorów rozmiaru
+        setupSizeSelector('add');
+        setupSizeSelector('edit');
+    });
+    </script>
+</body>
+</html>

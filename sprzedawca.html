@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Sprzedawcy - Upieczemy.pl</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        /* --- STYLE GŁÓWNE I NAGŁÓWKA --- */
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: hsl(308, 44%, 86%); min-height: 100vh; }
+        .header { width: 100%; padding: 20px 40px; background-color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .search-wrapper { position: relative; }
+        .location-search { display: flex; align-items: center; background-color: #f5f5f5; border-radius: 20px; padding: 5px 15px; transition: box-shadow 0.3s, background-color 0.3s; cursor: pointer; }
+        .location-search:focus-within { background-color: #fff; box-shadow: 0 0 0 2px #FF80AB; }
+        .location-search .search-icon { width: 18px; height: 18px; fill: #888; margin-right: 8px; }
+        #citySearchInput { border: none; background: transparent; outline: none; font-size: 14px; width: 150px; transition: width 0.3s; }
+        #citySearchInput::placeholder { color: #aaa; }
+        #citySearchInput:focus { width: 200px; }
+        .suggestions-box { position: absolute; top: 100%; left: 0; right: 0; background-color: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; z-index: 10; }
+        .suggestion-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background-color: #f8f8f8; }
+        .site-name { font-family: 'Pacifico', cursive; font-size: 2rem; color: #FF80AB; margin: 0; text-decoration: none; transition: color 0.3s; }
+        .site-name:hover { color: #ff61a1; }
+        .header-buttons-container { display: flex; gap: 10px; align-items: center; }
+        .login-button { padding: 4px 10px; background-color: #FF80AB; color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; text-decoration: none; }
+        .login-button:hover { background-color: #ff61a1; }
+        #kontoBtn { background-color: #070707; }
+        #kontoBtn:hover { background-color: #ff80ab; }
+        .hidden { display: none !important; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; font-weight: bold; z-index: 2000; opacity: 0; transform: translateX(100%); transition: opacity 0.3s ease, transform 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .notification.success { background-color: #4CAF50; }
+        .notification.error { background-color: #f44336; }
+        .notification.info { background-color: #2196F3; }
+        .icon-button { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color: transparent; border-radius: 50%; color: #333; text-decoration: none; transition: background-color 0.3s, color 0.3s; position: relative; }
+        .icon-button:hover { background-color: #f0f0f0; color: #FF80AB; }
+        .icon-button svg { width: 22px; height: 22px; fill: currentColor; }
+        .cart-count, .favorites-count { position: absolute; top: -5px; right: -5px; background-color: #e91e63; color: white; font-size: 11px; font-weight: bold; padding: 2px 5px; border-radius: 10px; min-width: 18px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .icon-button::after { content: attr(data-tooltip); position: absolute; bottom: 111%; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 4px 4px; border-radius: 6px; font-size: 9px; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1002; }
+        .icon-button::before { content: ""; position: absolute; bottom: 80%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #333; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1002; }
+        .icon-button:hover::after, .icon-button:hover::before { opacity: 1; visibility: visible; }
+        .account-dropdown { position: relative; display: inline-block; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; right: 0; background-color: white; min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1001; border-radius: 8px; overflow: hidden; }
+        .dropdown-menu a { color: #333; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px; transition: background-color 0.3s; }
+        .dropdown-menu a:hover { background-color: #f1f1f1; }
+        .account-dropdown:hover .dropdown-menu { display: block; }
+
+        /* --- STYLE DLA STRONY SPRZEDAWCY --- */
+        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .seller-profile-header { display: flex; align-items: center; gap: 30px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 30px; }
+        .seller-avatar { width: 200px; height: 200px; border-radius: 15px; object-fit: cover; border: 5px solid #f0f0f0; }
+        .seller-info h1 { margin: 0 0 10px 0; color: #333; }
+        .seller-info p { margin: 0 0 5px 0; color: #777; }
+        .seller-info .rating { color: #FFD700; font-size: 1.2rem; margin-top: 10px; }
+        .products-section { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .products-section h2 { margin-top: 0; color: #333; border-bottom: 2px solid #FF80AB; padding-bottom: 10px; }
+        .no-products-message { text-align: center; font-size: 1.2rem; color: #888; }
+        .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #FF80AB; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- NOWE, POPRAWIONE STYLE DLA KART PRODUKTÓW --- */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            height: 180px;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .product-card-image {
+            width: 180px;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .product-card-body {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-grow: 1;
+            min-width: 0; /* Kluczowe dla prawidłowego działania text-overflow */
+        }
+
+        .product-card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .product-card-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        
+        .product-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .product-card-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 0;
+        }
+
+        /* Nowy styl dla przycisku "Dodaj do koszyka" na karcie produktu */
+        .product-card .add-to-cart-btn {
+            padding: 6px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .product-card .add-to-cart-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive dla mniejszych ekranów */
+        @media (max-width: 480px) {
+            .products-grid { grid-template-columns: 1fr; }
+            .product-card { flex-direction: column; height: auto; }
+            .product-card-image { width: 100%; height: 200px; }
+        }
+
+        /* --- STYLE DLA PANELU LOGOWANIA I REJESTRACJI --- */
+        .login-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-content { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; position: relative; }
+        .login-content h2 { margin-top: 0; color: #333; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .login-content form button { width: 100%; padding: 12px; background-color: #FF80AB; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        .login-content form button:hover { background-color: #ff61a1; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer; }
+        .close-btn:hover { color: #000; }
+        .toggle-form-link { margin-top: 15px; font-size: 14px; color: #666; }
+        .toggle-form-link a { color: #FF80AB; text-decoration: none; font-weight: bold; }
+        .toggle-form-link a:hover { text-decoration: underline; }
+        
+        /* --- ZAKTUALIZOWANE STYLE DLA QUICK VIEW MODAL --- */
+        .quick-view-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .quick-view-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); }
+        .quick-view-content { position: relative; background-color: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 800px; max-height: 90vh; width: 90%; z-index: 1001; display: flex; flex-direction: column; }
+        .quick-view-close { position: absolute; top: 15px; right: 20px; font-size: 30px; font-weight: bold; color: #aaa; cursor: pointer; z-index: 1002; }
+        .quick-view-close:hover { color: #000; }
+
+        /* --- POPRAWIONA REGUŁA DLA QUICK VIEW BODY --- */
+        .quick-view-body { 
+            display: flex; 
+            gap: 25px; 
+            overflow-y: auto; /* Włącz przewijanie pionowe */
+            flex: 1; /* Pozwala elementowi zająć dostępną przestrzeń w pionie */
+            min-height: 0; /* Kluczowe dla flexbox, aby element mógł się kurczyć */
+            /* Oblicz maksymalną wysokość, odejmując padding od rodzica */
+            max-height: calc(90vh - 60px); 
+        }
+
+        /* Nowy kontener na zdjęcie i elementy pod nim */
+        .quick-view-image-container {
+            flex: 0 0 350px; /* Ustawia stałą szerokość */
+            display: flex;
+            flex-direction: column; /* Ułoży zdjęcie i stopkę w kolumnie */
+        }
+
+        .quick-view-image {
+            width: 100%; /* Dostosowuje się do kontenera */
+            height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Nowa stopka pod zdjęciem z ceną i przyciskiem */
+        .quick-view-image-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .quick-view-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 0; /* Resetuje marginesy */
+        }
+
+        /* Styl nowego przycisku */
+        .add-to-cart-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .add-to-cart-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .quick-view-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1; /* Zajmuje pozostałą przestrzeń */
+        }
+
+        .quick-view-details h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* --- ZMIANA: USUNIĘTO OGRANICZENIE LINII W OPISIE --- */
+        .quick-view-details p {
+            color: #555;
+            line-height: 1.6;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            flex-grow: 1; /* Pozwala opisowi wypełnić przestrzeń */
+            margin: 0;
+            /* Usunięto: -webkit-line-clamp, -webkit-box-orient, overflow */
+        }
+
+        /* Zaktualizowane style dla Quick View na urządzeniach mobilnych */
+        @media (max-width: 768px) {
+            .quick-view-body {
+                flex-direction: column;
+                align-items: center;
+            }
+            .quick-view-image-container {
+                flex: none; /* Wyłącza właściwości flex */
+                width: 100%;
+                max-width: 350px;
+            }
+            .quick-view-image {
+                height: auto; /* Pozwala wysokości się dostosować */
+                aspect-ratio: 1 / 1; /* Utrzymuje proporcje kwadratu */
+            }
+            .quick-view-details {
+                width: 100%;
+                margin-top: 20px; /* Dodaje odstęp na górze */
+            }
+            .quick-view-price {
+                text-align: left; /* Wyrównuje cenę do lewej */
+            }
+        }
+        
+        /* --- STYLE DLA MODALU WYBORU ROZMIARU --- */
+        .size-selection-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        /* --- POPRAWIONY KONTENER TREŚCI MODALU WYBORU ROZMIARU --- */
+        .size-selection-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh; /* Ustaw maksymalną wysokość */
+            position: relative;
+            display: flex;
+            flex-direction: column; /* Użyj flexbox do zarządzania przestrzenią */
+        }
+        
+        .size-selection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-shrink: 0; /* Zapobiegaj kurczeniu się nagłówka */
+        }
+        
+        .size-selection-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 0;
+        }
+        
+        .size-selection-close {
+            font-size: 24px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .size-selection-close:hover {
+            color: #000;
+        }
+        
+        /* --- NOWY KONTENER Z PRZEWIJANIEM DLA TREŚCI MODALU --- */
+        .size-selection-body {
+            overflow-y: auto; /* Włącz przewijanie */
+            flex: 1; /* Pozwala kontenerowi zająć dostępną przestrzeń */
+            min-height: 0; /* Kluczowe dla flexbox, aby element mógł się kurczyć */
+            padding-right: 10px; /* Dodaj trochę miejsca dla paska przewijania */
+        }
+        
+        .size-selection-product {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-shrink: 0; /* Zapobiegaj kurczeniu się tego elementu */
+        }
+        
+        /* --- ZMIANA: POWIĘKSZENIE ZDJĘCIA W MODALU WYBORU ROZMIARU --- */
+        .size-selection-product-image {
+            width: 150px; /* Zwiększono z 80px */
+            height: 150px; /* Zwiększono z 80px */
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0; /* Zapobiegaj kurczeniu się obrazka */
+        }
+        
+        .size-selection-product-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .size-selection-product-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .size-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .size-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .size-option:hover {
+            border-color: #FF80AB;
+            background-color: #fff0f5;
+        }
+        
+        .size-option.selected {
+            border-color: #FF80AB;
+            background-color: #fff0f5;
+        }
+        
+        .size-option-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .size-option-price {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 1.1rem;
+        }
+        
+        .size-option-desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .size-selection-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0; /* Zapobiegaj kurczeniu się przycisków */
+            margin-top: auto; /* Wypchnij przyciski na dół */
+        }
+        
+        .size-selection-cancel {
+            flex: 1;
+            padding: 10px;
+            background-color: #f5f5f5;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .size-selection-cancel:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .size-selection-add {
+            flex: 2;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .size-selection-add:hover {
+            background-color: #45a049;
+        }
+        
+        .size-selection-add:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            .size-selection-product {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .size-option {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <a href="http://127.0.0.1:5500/index.html" class="site-name">Upieczemy.pl</a>
+            <div class="search-wrapper">
+                <div class="location-search">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="search-icon"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    <input type="text" id="citySearchInput" placeholder="Wyszukaj miasto...">
+                </div>
+                <div id="city-suggestions-box" class="suggestions-box" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="header-buttons-container">
+            <a href="/powiadomienia" class="icon-button hidden" aria-label="Powiadomienia" data-tooltip="Powiadomienia">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            </a>
+            <a href="/koszyk" class="icon-button hidden" aria-label="Koszyk" data-tooltip="Koszyk">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span class="cart-count hidden">0</span>
+            </a>
+            <a href="/wiadomosci" class="icon-button hidden" aria-label="Wiadomości" data-tooltip="Wiadomości">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </a>
+            <a href="/ulubione" class="icon-button hidden" aria-label="Ulubione" data-tooltip="Ulubione">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span class="favorites-count hidden">0</span>
+            </a>
+            <a href="#" id="logoutBtn" class="icon-button hidden" aria-label="Wyloguj" data-tooltip="Wyloguj">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            </a>
+            <div class="account-dropdown">
+                <a id="kontoBtn" href="http://127.0.0.1:5500/profil.html" class="login-button hidden">Konto</a>
+                <div class="dropdown-menu">
+                    <a href="http://127.0.0.1:5500/profil.html">Dane użytkownika</a>
+                    <a href="http://127.0.0.1:5500/profil.html">Moje produkty</a>
+                    <a href="http://127.0.0.1:5500/profil.html">Historia Płatności</a>
+                </div>
+            </div>
+            <button id="loginBtn" class="login-button">Zaloguj</button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div id="seller-profile-header" class="seller-profile-header">
+            <img id="seller-avatar" class="seller-avatar" src="https://via.placeholder.com/200" alt="Zdjęcie sprzedawcy">
+            <div class="seller-info">
+                <h1 id="seller-name">Ładowanie...</h1>
+                <p id="seller-city">📍 Ładowanie...</p>
+                <p id="seller-description">Ładowanie opisu...</p>
+                <div id="seller-rating" class="rating">Ładowanie oceny...</div>
+            </div>
+        </div>
+
+        <section class="products-section">
+            <h2>Produkty sprzedawcy</h2>
+            <div id="products-grid" class="products-grid">
+                <div class="loading-spinner"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- --- ZAKTUALIZOWANY QUICK VIEW MODAL --- -->
+    <div id="quick-view-modal" class="quick-view-modal hidden">
+        <div class="quick-view-overlay"></div>
+        <div class="quick-view-content">
+            <span class="quick-view-close">&times;</span>
+            <div class="quick-view-body">
+                <!-- Nowy kontener na zdjęcie i elementy pod nim -->
+                <div class="quick-view-image-container">
+                    <img id="quick-view-image" src="" alt="Zdjęcie produktu" class="quick-view-image">
+                    <!-- Nowa stopka z ceną i przyciskiem -->
+                    <div class="quick-view-image-footer">
+                        <div class="quick-view-price" id="quick-view-price"></div>
+                        <button class="add-to-cart-btn" id="quick-view-add-to-cart">Dodaj do koszyka</button>
+                    </div>
+                </div>
+                <!-- Kontener na tekst jest teraz oddzielony -->
+                <div class="quick-view-details">
+                    <h2 id="quick-view-name"></h2>
+                    <p id="quick-view-description"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- MODAL WYBORU ROZMIARU --- -->
+    <div id="size-selection-modal" class="size-selection-modal hidden">
+        <div class="size-selection-content">
+            <div class="size-selection-header">
+                <h3 class="size-selection-title">Wybierz rozmiar</h3>
+                <button class="size-selection-close">&times;</button>
+            </div>
+            
+            <!-- NOWY KONTENER Z PRZEWIJANIEM DLA TREŚCI -->
+            <div class="size-selection-body">
+                <div class="size-selection-product">
+                    <img id="size-selection-image" src="" alt="Zdjęcie produktu" class="size-selection-product-image">
+                    <div class="size-selection-product-info">
+                        <h3 id="size-selection-name"></h3>
+                        <p id="size-selection-description"></p>
+                    </div>
+                </div>
+                <div class="size-options" id="size-options">
+                    <!-- Opcje rozmiaru będą dodane dynamicznie -->
+                </div>
+            </div>
+            
+            <div class="size-selection-actions">
+                <button class="size-selection-cancel">Anuluj</button>
+                <button class="size-selection-add" id="confirm-add-to-cart" disabled>Dodaj do koszyka</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- PANEL LOGOWANIA I REJESTRACJI --- -->
+    <div id="login-panel" class="login-panel hidden">
+        <div class="login-content">
+            <span class="close-btn" id="closeBtn">&times;</span>
+            <div id="login-form-container">
+                <h2>Logowanie</h2>
+                <form id="login-form">
+                    <div class="form-group"><label for="email">Adres e-mail:</label><input type="email" id="email" name="email" required></div>
+                    <div class="form-group"><label for="password">Hasło:</label><input type="password" id="password" name="password" required></div>
+                    <button type="submit">Zaloguj się</button>
+                </form>
+                <p class="toggle-form-link">Nie masz konta? <a href="#" id="show-register">Utwórz je</a></p>
+            </div>
+            <div id="register-form-container" class="hidden">
+                <h2>Utwórz konto</h2>
+                <form id="register-form">
+                    <div class="form-group"><label for="new-email">Adres e-mail:</label><input type="email" id="new-email" name="new_email" required></div>
+                    <div class="form-group"><label for="new-password">Hasło:</label><input type="password" id="new-password" name="new_password" required></div>
+                    <div class="form-group"><label for="new-username">Nazwa użytkownika:</label><input type="text" id="new-username" name="new_username" required></div>
+                    <div class="form-group"><label for="city">Miasto:</label><input type="text" id="city" name="city" required></div>
+                    <div class="form-group"><label for="postal-code">Kod pocztowy:</label><input type="text" id="postal-code" name="postal_code" required></div>
+                    <div class="form-group"><label for="address">Adres:</label><input type="text" id="address" name="address" required></div>
+                    <div class="form-group"><label for="phone">Numer telefonu:</label><input type="tel" id="phone" name="phone" required></div>
+                    <button type="submit">Zarejestruj się</button>
+                </form>
+                <p class="toggle-form-link">Masz już konto? <a href="#" id="show-login">Zaloguj się</a></p>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Menedżer Autentykacji ---
+        const AuthManager = {
+            channelName: 'auth_channel_upieczemy',
+            channel: null,
+
+            init() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const logoutFromUrl = urlParams.get('logout') === 'true';
+                const logoutFromSession = sessionStorage.getItem('just_logged_out') === 'true';
+
+                if (logoutFromUrl || logoutFromSession) {
+                    console.log('Wykryto wylogowanie (z URL lub sessionStorage). Wymuszam czyszczenie stanu.');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    sessionStorage.removeItem('just_logged_out');
+                    if (logoutFromUrl) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    this.showNotification('Zostałeś wylogowany pomyślnie.', 'success');
+                }
+
+                console.log('AuthManager: Inicjalizacja...');
+                try {
+                    this.channel = new BroadcastChannel(this.channelName);
+                    this.channel.onmessage = (event) => {
+                        if (event.data && event.data.type === 'logout') {
+                            console.log('AuthManager: Wykryto sygnał wylogowania z innej karty. Czyszczę stan.');
+                            this.performLogout(false, false);
+                        }
+                    };
+                } catch (e) {
+                    console.error("BroadcastChannel nie jest wspierany.", e);
+                }
+
+                this.checkAuthStatus();
+                this.setupEventListeners();
+            },
+
+            setupEventListeners() {
+                this.loginBtn = document.getElementById('loginBtn');
+                this.logoutBtn = document.getElementById('logoutBtn');
+                this.kontoBtn = document.getElementById('kontoBtn');
+                this.loginPanel = document.getElementById('login-panel');
+                this.closeBtn = document.getElementById('closeBtn');
+                this.loginForm = document.getElementById('login-form');
+                this.registerForm = document.getElementById('register-form');
+                this.loginFormContainer = document.getElementById('login-form-container');
+                this.registerFormContainer = document.getElementById('register-form-container');
+                this.showRegisterLink = document.getElementById('show-register');
+                this.showLoginLink = document.getElementById('show-login');
+
+                this.loginBtn?.addEventListener('click', () => this.openLoginPanel());
+                this.closeBtn?.addEventListener('click', () => this.closeLoginPanel());
+                this.loginPanel?.addEventListener('click', (event) => {
+                    if (event.target === this.loginPanel) this.closeLoginPanel();
+                });
+                this.showRegisterLink?.addEventListener('click', (e) => { e.preventDefault(); this.switchToRegisterForm(); });
+                this.showLoginLink?.addEventListener('click', (e) => { e.preventDefault(); this.switchToLoginForm(); });
+                this.loginForm?.addEventListener('submit', (event) => this.handleLogin(event));
+                this.registerForm?.addEventListener('submit', (event) => this.handleRegister(event));
+                this.logoutBtn?.addEventListener('click', () => this.handleLogoutClick());
+            },
+
+            checkAuthStatus() {
+                const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                const loginBtn = document.getElementById('loginBtn');
+                const logoutBtn = document.getElementById('logoutBtn');
+                const kontoBtn = document.getElementById('kontoBtn');
+                const iconButtons = document.querySelectorAll('.icon-button');
+
+                if (token) {
+                    loginBtn?.classList.add('hidden');
+                    logoutBtn?.classList.remove('hidden');
+                    kontoBtn?.classList.remove('hidden');
+                    iconButtons.forEach(btn => btn.classList.remove('hidden'));
+                    if (user.nazwaUzytkownika && kontoBtn) {
+                        kontoBtn.textContent = user.nazwaUzytkownika;
+                    }
+                } else {
+                    loginBtn?.classList.remove('hidden');
+                    logoutBtn?.classList.add('hidden');
+                    kontoBtn?.classList.add('hidden');
+                    iconButtons.forEach(btn => btn.classList.add('hidden'));
+                    if (kontoBtn) kontoBtn.textContent = 'Konto';
+                }
+            },
+            
+            openLoginPanel() {
+                this.loginPanel.classList.remove('hidden');
+                this.loginForm.reset();
+            },
+            
+            closeLoginPanel() {
+                this.loginForm.reset();
+                this.loginPanel.classList.add('hidden');
+            },
+            
+            switchToRegisterForm() {
+                this.loginForm.reset();
+                this.loginFormContainer.classList.add('hidden');
+                this.registerFormContainer.classList.remove('hidden');
+            },
+            
+            switchToLoginForm() {
+                this.registerForm.reset();
+                this.registerFormContainer.classList.add('hidden');
+                this.loginFormContainer.classList.remove('hidden');
+            },
+
+            async handleLogin(event) {
+                event.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/auth/logowanie', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, haslo: password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.uzytkownik));
+                        
+                        this.checkAuthStatus();
+                        this.closeLoginPanel();
+                        this.showNotification('Zalogowano pomyślnie!', 'success');
+                    } else {
+                        this.showNotification(data.komunikat || 'Błąd logowania. Sprawdź dane.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Błąd sieciowy:', error);
+                    this.showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error');
+                }
+            },
+
+            async handleRegister(event) {
+                event.preventDefault();
+                const daneRejestracji = {
+                    email: document.getElementById('new-email').value,
+                    haslo: document.getElementById('new-password').value,
+                    nazwaUzytkownika: document.getElementById('new-username').value,
+                    miasto: document.getElementById('city').value,
+                    kodPocztowy: document.getElementById('postal-code').value,
+                    adres: document.getElementById('address').value,
+                    telefon: document.getElementById('phone').value
+                };
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/auth/rejestracja', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(daneRejestracji)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.showNotification('Rejestracja zakończona! Sprawdź swoją skrzynkę e-mail, otrzymasz od nas wiadomość powitalną.', 'success');
+                        this.registerFormContainer.classList.add('hidden');
+                        this.loginFormContainer.classList.remove('hidden');
+                        this.registerForm.reset();
+                    } else {
+                        this.showNotification(data.komunikat || 'Błąd rejestracji.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Błąd sieciowy:', error);
+                    this.showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error');
+                }
+            },
+
+            handleLogoutClick() {
+                console.log('AuthManager: Kliknięto "Wyloguj". Rozpoczynam proces.');
+                this.performLogout(true, true);
+            },
+
+            async performLogout(shouldBroadcast = false, shouldRedirect = true) {
+                console.log(`AuthManager: Wykonuję wylogowanie. Broadcast: ${shouldBroadcast}, Redirect: ${shouldRedirect}`);
+                
+                try {
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        await fetch('http://localhost:5000/api/auth/logout', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'x-auth-token': token }
+                        });
+                        console.log('AuthManager: Serwer poinformowany o wylogowaniu.');
+                    }
+                } catch (error) {
+                    console.error('AuthManager: Błąd komunikacji z serwerem:', error);
+                }
+                
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                console.log('AuthManager: Wyczyszczono localStorage.');
+                
+                if (shouldRedirect) {
+                    sessionStorage.setItem('just_logged_out', 'true');
+                }
+
+                if (shouldBroadcast && this.channel) {
+                    this.channel.postMessage({ type: 'logout' });
+                    console.log('AuthManager: Wysłano sygnał wylogowania do innych kart.');
+                }
+
+                this.checkAuthStatus();
+                console.log('AuthManager: Zaktualizowano interfejs.');
+
+                if (shouldRedirect) {
+                    this.showNotification('Wylogowano. Przekierowuję...', 'success');
+                    setTimeout(() => {
+                        const timestamp = new Date().getTime();
+                        window.location.href = `http://127.0.0.1:5500/index.html?logout=true&t=${timestamp}`;
+                    }, 1000);
+                }
+            },
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateX(0)';
+                }, 10);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        };
+
+        // Inicjalizacja AuthManager
+        AuthManager.init();
+
+        // --- LOGIKA WYSZUKIWARKI ---
+        const citySearchInput = document.getElementById('citySearchInput');
+        const citySuggestionsBox = document.getElementById('city-suggestions-box');
+        const locationSearchContainer = document.querySelector('.location-search');
+        
+        locationSearchContainer.addEventListener('click', () => {
+            citySearchInput.focus();
+        });
+
+        function handleRedirect(city) {
+            if (!city) return;
+            console.log(`>>> PRZEKIEROWUJĘ NA: /uzytkownicy-w-miescie.html z miastem: "${city}" <<<`);
+            window.location.href = `/uzytkownicy-w-miescie.html?city=${encodeURIComponent(city)}`;
+        }
+
+        const fetchCitySuggestions = async (query) => {
+            if (query.length < 2) {
+                citySuggestionsBox.style.display = 'none';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/suggestions?q=${encodeURIComponent(query)}`);
+                const suggestions = await response.json();
+                
+                citySuggestionsBox.innerHTML = '';
+                
+                if (suggestions.length > 0) {
+                    suggestions.forEach(city => {
+                        const item = document.createElement('div');
+                        item.classList.add('suggestion-item');
+                        item.textContent = city;
+                        item.addEventListener('click', () => {
+                            console.log(`>>> WYBRANO MIASTO Z SUGESTII: "${city}" <<<`);
+                            handleRedirect(city);
+                        });
+                        citySuggestionsBox.appendChild(item);
+                    });
+                    citySuggestionsBox.style.display = 'block';
+                } else {
+                    citySuggestionsBox.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Błąd podczas pobierania sugestii:', error);
+                citySuggestionsBox.style.display = 'none';
+            }
+        };
+
+        let cityDebounceTimer;
+        citySearchInput.addEventListener('input', (event) => {
+            const query = event.target.value;
+            clearTimeout(cityDebounceTimer);
+            cityDebounceTimer = setTimeout(() => fetchCitySuggestions(query), 300);
+        });
+
+        citySearchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                const city = citySearchInput.value.trim();
+                console.log(`>>> WYSZUKIWANIE MIASTA PRZYCISKIEM ENTER: "${city}" <<<`);
+                handleRedirect(city);
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!citySearchInput.contains(event.target) && !citySuggestionsBox.contains(event.target)) {
+                citySuggestionsBox.style.display = 'none';
+            }
+        });
+
+        // --- LOGIKA STRONY SPRZEDAWCY ---
+        const sellerId = new URLSearchParams(window.location.search).get('id');
+        const sellerAvatar = document.getElementById('seller-avatar');
+        const sellerName = document.getElementById('seller-name');
+        const sellerCity = document.getElementById('seller-city');
+        const sellerDescription = document.getElementById('seller-description');
+        const sellerRating = document.getElementById('seller-rating');
+        const productsGrid = document.getElementById('products-grid');
+
+        if (!sellerId) {
+            document.querySelector('.main-container').innerHTML = '<p class="no-products-message">Nie podano ID sprzedawcy.</p>';
+            return;
+        }
+
+        // Funkcja do renderowania gwiazdek
+        function renderStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                stars += i <= rating ? '★' : '☆';
+            }
+            return stars;
+        }
+
+        // Pobierz dane sprzedawcy
+        async function fetchSellerData() {
+            console.log(`>>> fetchSellerData: Rozpoczynam pobieranie dla ID: ${sellerId}`);
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${sellerId}`);
+                console.log(`>>> fetchSellerData: Otrzymano odpowiedź. Status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Błąd serwera! Status: ${response.status}`);
+                }
+                
+                const seller = await response.json();
+                console.log(`>>> fetchSellerData: Odebrane dane sprzedawcy:`, seller);
+                
+                const displayName = seller.nazwaSklepu || seller.nazwaUzytkownika || 'Brak nazwy';
+                console.log(`>>> fetchSellerData: Używam wyświetlaną nazwę: "${displayName}"`);
+                
+                let avatarUrl = seller.zdjecieProfilowe && seller.zdjecieProfilowe.startsWith('http') 
+                    ? seller.zdjecieProfilowe 
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=FF80AB&color=fff&size=200`;
+                
+                sellerAvatar.src = avatarUrl;
+                sellerName.textContent = displayName;
+                sellerCity.textContent = `📍 ${seller.miasto || 'Brak miasta'}`;
+                sellerDescription.textContent = seller.opisSklepu || 'Brak opisu sklepu.';
+                
+                try {
+                    const ratingResponse = await fetch(`http://localhost:5000/api/reviews/user/${sellerId}/summary`);
+                    
+                    if (ratingResponse.ok) {
+                        const ratingData = await ratingResponse.json();
+                        sellerRating.innerHTML = `${renderStars(Math.round(ratingData.averageRating))} (${ratingData.totalReviews} opinii)`;
+                    } else {
+                        console.warn(`Nie udało się pobrać ocen. Status serwera: ${ratingResponse.status}. Upewnij się, że endpoint /api/reviews/user/${sellerId}/summary istnieje.`);
+                        sellerRating.innerHTML = '☆☆☆☆☆ (0 opinii)';
+                    }
+                } catch (error) {
+                    console.error('Błąd pobierania oceny:', error);
+                    sellerRating.innerHTML = '☆☆☆☆☆ (0 opinii)';
+                }
+
+            } catch (error) {
+                console.error('>>> BŁĄD W fetchSellerData:', error);
+                sellerName.textContent = 'Błąd ładowania danych';
+            }
+        }
+
+        // --- NOWA FUNKCJA OBSŁUGUJĄCA DODAWANIE DO KOSZYKA ---
+        function handleAddToCart(productId, productData) {
+            // Sprawdź, czy użytkownik jest zalogowany
+            const token = localStorage.getItem('token');
+            if (!token) {
+                AuthManager.showNotification('Musisz być zalogowany, aby dodać produkt do koszyka.', 'error');
+                AuthManager.openLoginPanel();
+                return;
+            }
+
+            // Zapisz dane produktu globalnie
+            window.currentProductId = productId;
+            window.currentProduct = productData;
+
+            const ceny = productData.ceny || {};
+            const availableSizes = Object.keys(ceny).filter(size => ceny[size] > 0);
+
+            // Jeśli nie ma zdefiniowanych cen dla różnych rozmiarów lub jest tylko jeden rozmiar
+            if (availableSizes.length <= 1) {
+                // Określ rozmiar i cenę do dodania
+                let sizeToAdd, priceToAdd;
+
+                if (availableSizes.length === 1) {
+                    // Jest jeden konkretny rozmiar z ceną
+                    sizeToAdd = availableSizes[0];
+                    priceToAdd = ceny[sizeToAdd];
+                } else {
+                    // Brak cen dla rozmiarów, użyj domyślnych wartości produktu
+                    sizeToAdd = productData.rozmiar || 'normal';
+                    priceToAdd = productData.cena;
+                }
+                
+                // Dodaj bezpośrednio do koszyka
+                addToCart(productId, sizeToAdd, priceToAdd);
+            } else {
+                // Jest więcej niż jeden rozmiar z ceną, pokaż modal wyboru
+                openSizeSelectionModal();
+            }
+        }
+
+        // --- FUNKCJE QUICK VIEW ---
+        function openQuickView(product) {
+            const modal = document.getElementById('quick-view-modal');
+            const image = document.getElementById('quick-view-image');
+            const name = document.getElementById('quick-view-name');
+            const description = document.getElementById('quick-view-description');
+            const price = document.getElementById('quick-view-price');
+
+            image.src = product.zdjecie || 'https://via.placeholder.com/350x350.png?text=Brak+zdjęcia';
+            image.alt = product.nazwa;
+            name.textContent = product.nazwa;
+            description.textContent = product.opis || 'Brak opisu.';
+            
+            // Wyświetl cenę domyślną (dla domyślnego rozmiaru)
+            const defaultSize = product.rozmiar || 'normal';
+            const defaultPrice = product.ceny && product.ceny[defaultSize] ? product.ceny[defaultSize] : product.cena;
+            price.textContent = `${defaultPrice.toFixed(2)} zł`;
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Zapisz ID produktu do użycia w przycisku "Dodaj do koszyka"
+            window.currentProductId = product._id;
+            
+            // Zapisz pełne dane produktu dla późniejszego użycia
+            window.currentProduct = product;
+            
+            // Dodaj event listener do przycisku "Dodaj do koszyka"
+            const addToCartBtn = document.getElementById('quick-view-add-to-cart');
+            if (addToCartBtn) {
+                // Usuń istniejące event listenery, aby uniknąć duplikacji
+                addToCartBtn.replaceWith(addToCartBtn.cloneNode(true));
+                
+                // Dodaj nowy event listener, który wywoła naszą nową funkcję
+                document.getElementById('quick-view-add-to-cart').addEventListener('click', (e) => {
+                    e.stopPropagation(); // Zapobiegaj propagacji eventu
+                    handleAddToCart(product._id, product);
+                });
+            }
+        }
+
+        function closeQuickView() {
+            const modal = document.getElementById('quick-view-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Dodaj event listenery do zamykania modala
+        document.querySelector('.quick-view-close').addEventListener('click', closeQuickView);
+        document.querySelector('.quick-view-overlay').addEventListener('click', closeQuickView);
+
+        // --- FUNKCJE MODALU WYBORU ROZMIARU ---
+        function openSizeSelectionModal() {
+            if (!window.currentProductId) {
+                AuthManager.showNotification('Nie wybrano produktu.', 'error');
+                return;
+            }
+            
+            console.log(`>>> Otwieram modal wyboru rozmiaru dla produktu ID: ${window.currentProductId}`);
+            
+            const modal = document.getElementById('size-selection-modal');
+            const image = document.getElementById('size-selection-image');
+            const name = document.getElementById('size-selection-name');
+            const description = document.getElementById('size-selection-description');
+            const sizeOptions = document.getElementById('size-options');
+            const confirmBtn = document.getElementById('confirm-add-to-cart');
+            
+            // Użyj zapisanych danych produktu, jeśli są dostępne
+            const product = window.currentProduct;
+            
+            if (product) {
+                // Wypełnij dane produktu w modalu
+                image.src = product.zdjecie || 'https://via.placeholder.com/150x150.png?text=Brak+zdjęcia';
+                image.alt = product.nazwa;
+                name.textContent = product.nazwa;
+                description.textContent = product.opis || 'Brak opisu.';
+                
+                // Wyczyść opcje rozmiaru
+                sizeOptions.innerHTML = '';
+                
+                // Pobierz ceny dla każdego rozmiaru
+                const ceny = product.ceny || {};
+                const defaultSize = product.rozmiar || 'normal';
+                
+                // Definicje rozmiarów z opisami
+                const sizeDefinitions = {
+                    mini: { name: 'Mini', desc: 'Mały rozmiar, idealny na pojedyncze osoby' },
+                    normal: { name: 'Normal', desc: 'Standardowy rozmiar dla 2-4 osób' },
+                    max: { name: 'Max', desc: 'Duży rozmiar dla większych grup' }
+                };
+                
+                // Stwórz opcje rozmiaru
+                let hasAnySize = false;
+                Object.entries(sizeDefinitions).forEach(([size, def]) => {
+                    // Sprawdź, czy cena dla tego rozmiaru jest dostępna
+                    const price = ceny[size] || 0;
+                    if (price > 0) {  // Pokaż tylko rozmiary z ustawioną ceną
+                        hasAnySize = true;
+                        const option = document.createElement('div');
+                        option.className = 'size-option';
+                        option.dataset.size = size;
+                        option.dataset.price = price;
+                        
+                        // Zaznacz domyślny rozmiar
+                        if (size === defaultSize) {
+                            option.classList.add('selected');
+                            confirmBtn.disabled = false;
+                        }
+                        
+                        option.innerHTML = `
+                            <div>
+                                <div class="size-option-name">${def.name}</div>
+                                <div class="size-option-desc">${def.desc}</div>
+                            </div>
+                            <div class="size-option-price">${price.toFixed(2)} zł</div>
+                        `;
+                        
+                        option.addEventListener('click', () => {
+                            // Usuń zaznaczenie z wszystkich opcji
+                            document.querySelectorAll('.size-option').forEach(opt => {
+                                opt.classList.remove('selected');
+                            });
+                            
+                            // Zaznacz klikniętą opcję
+                            option.classList.add('selected');
+                            confirmBtn.disabled = false;
+                        });
+                        
+                        sizeOptions.appendChild(option);
+                    }
+                });
+                
+                // Jeśli nie ma żadnych opcji rozmiaru, poinformuj użytkownika
+                if (!hasAnySize) {
+                    sizeOptions.innerHTML = '<p style="text-align: center; color: #666;">Brak dostępnych rozmiarów dla tego produktu.</p>';
+                    confirmBtn.disabled = true;
+                }
+                
+                // Pokaż modal
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                // Jeśli nie mamy danych produktu, pobierz je z API
+                fetch(`http://localhost:5000/api/products/${window.currentProductId}`)
+                    .then(response => {
+                        console.log(`>>> Otrzymano odpowiedź z API dla produktu. Status: ${response.status} ${response.statusText}`);
+                        
+                        if (!response.ok) {
+                            // Spróbuj odczytać błąd jako JSON
+                            return response.json().then(errorData => {
+                                throw new Error(errorData.komunikat || `Błąd serwera! Status: ${response.status}`);
+                            });
+                        }
+                        
+                        return response.json();
+                    })
+                    .then(product => {
+                        console.log(`>>> Pobrano dane produktu:`, product);
+                        
+                        // Zapisz dane produktu
+                        window.currentProduct = product;
+                        
+                        // Wywołaj ponownie funkcję z pobranymi danymi
+                        openSizeSelectionModal();
+                    })
+                    .catch(error => {
+                        console.error('>>> BŁĄD W pobieraniu danych produktu:', error);
+                        AuthManager.showNotification('Nie udało się pobrać danych produktu.', 'error');
+                        // Ukryj modal w razie błędu
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    });
+            }
+        }
+
+        function closeSizeSelectionModal() {
+            const modal = document.getElementById('size-selection-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Dodaj event listenery do zamykania modala wyboru rozmiaru
+        document.querySelector('.size-selection-close').addEventListener('click', closeSizeSelectionModal);
+        document.getElementById('size-selection-modal').addEventListener('click', (event) => {
+            if (event.target === document.getElementById('size-selection-modal')) {
+                closeSizeSelectionModal();
+            }
+        });
+        
+        document.querySelector('.size-selection-cancel').addEventListener('click', closeSizeSelectionModal);
+        
+        // Obsługa przycisku "Dodaj do koszyka" w modalu wyboru rozmiaru
+        document.getElementById('confirm-add-to-cart').addEventListener('click', () => {
+            const selectedOption = document.querySelector('.size-option.selected');
+            
+            if (!selectedOption) {
+                AuthManager.showNotification('Wybierz rozmiar produktu.', 'error');
+                return;
+            }
+            
+            const productId = window.currentProductId;
+            const size = selectedOption.dataset.size;
+            const price = parseFloat(selectedOption.dataset.price);
+            
+            // Dodaj produkt do koszyka
+            addToCart(productId, size, price);
+        });
+        
+        // Funkcja dodawania produktu do koszyka
+        async function addToCart(productId, size, price) {
+            try {
+                const token = localStorage.getItem('token');
+                
+                const response = await fetch('http://localhost:5000/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-auth-token': token
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        size: size,
+                        price: price,
+                        quantity: 1
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    AuthManager.showNotification('Produkt dodany do koszyka!', 'success');
+                    closeSizeSelectionModal();
+                    
+                    // Aktualizuj licznik produktów w koszyku
+                    updateCartCount();
+                } else {
+                    AuthManager.showNotification(data.message || 'Błąd dodawania produktu do koszyka.', 'error');
+                }
+            } catch (error) {
+                console.error('Błąd dodawania produktu do koszyka:', error);
+                AuthManager.showNotification('Wystąpił błąd podczas dodawania produktu do koszyka.', 'error');
+            }
+        }
+        
+        // Funkcja aktualizacji licznika produktów w koszyku
+        async function updateCartCount() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+                
+                const response = await fetch('http://localhost:5000/api/cart', {
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                
+                if (response.ok) {
+                    const cart = await response.json();
+                    const count = cart.items ? cart.items.length : 0;
+                    
+                    const cartCountElement = document.querySelector('.cart-count');
+                    if (count > 0) {
+                        cartCountElement.textContent = count;
+                        cartCountElement.classList.remove('hidden');
+                    } else {
+                        cartCountElement.classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Błąd aktualizacji licznika koszyka:', error);
+            }
+        }
+
+        // Pobierz produkty sprzedawcy
+        async function fetchAndDisplaySellerProducts() {
+            console.log(`\n>>> fetchAndDisplaySellerProducts: Rozpoczynam pobieranie produktów dla ID: ${sellerId}`);
+            productsGrid.innerHTML = '<div class="loading-spinner"></div>';
+
+            try {
+                if (!sellerId) {
+                    console.error(">>> BŁĄD: ID sprzedawcy (sellerId) jest puste lub niezdefiniowane!");
+                    productsGrid.innerHTML = '<p class="no-products-message">Błąd: Nie można zidentyfikować sprzedawcy.</p>';
+                    return;
+                }
+                console.log(`>>> fetchAndDisplaySellerProducts: ID sprzedawcy jest OK: ${sellerId}`);
+
+                const apiUrl = `http://localhost:5000/api/products/public?uzytkownik=${sellerId}`;
+                console.log(`>>> fetchAndDisplaySellerProducts: Wysyłam zapytanie do: ${apiUrl}`);
+                
+                const response = await fetch(apiUrl);
+                console.log(`>>> fetchAndDisplaySellerProducts: Otrzymano odpowiedź. Status: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    throw new Error(`Błąd serwera! Status: ${response.status}`);
+                }
+
+                const products = await response.json();
+                console.log(`>>> fetchAndDisplaySellerProducts: Odebrane dane produktów (surowe):`, products);
+
+                if (!Array.isArray(products)) {
+                    console.error(">>> BŁĄD: Odpowiedź z API nie jest tablicą!", products);
+                    productsGrid.innerHTML = '<p class="no-products-message">Serwer zwrócił dane w nieoczekiwanym formacie.</p>';
+                    return;
+                }
+
+                if (products.length === 0) {
+                    console.log(">>> fetchAndDisplaySellerProducts: Serwer zwrócił PUSTĄ tablicę produktów.");
+                    productsGrid.innerHTML = '<p class="no-products-message">Ten sprzedawca nie ma jeszcze żadnych produktów.</p>';
+                    return;
+                }
+
+                console.log(`>>> fetchAndDisplaySellerProducts: Tworzę karty dla ${products.length} produktów.`);
+                productsGrid.innerHTML = '';
+                
+                products.forEach((product, index) => {
+                    console.log(`>>> fetchAndDisplaySellerProducts: Tworzę kartę produktu ${index + 1}:`, product);
+                    
+                    const imageUrl = product.zdjecie || 'https://via.placeholder.com/180x180.png?text=Brak+zdjęcia';
+                    
+                    // Pobierz cenę domyślną (dla domyślnego rozmiaru)
+                    const defaultSize = product.rozmiar || 'normal';
+                    const defaultPrice = product.ceny && product.ceny[defaultSize] ? product.ceny[defaultSize] : product.cena;
+                    
+                    // Tworzymy element karty produktu
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    
+                    // Tworzymy strukturę HTML karty
+                    productCard.innerHTML = `
+                        <img src="${imageUrl}" alt="${product.nazwa}" class="product-card-image">
+                        <div class="product-card-body">
+                            <div>
+                                <h3 class="product-card-title">${product.nazwa}</h3>
+                                <p class="product-card-description">${product.opis || 'Brak opisu.'}</p>
+                            </div>
+                            <div class="product-card-footer">
+                                <span class="product-card-price">${defaultPrice.toFixed(2)} zł</span>
+                                <button class="add-to-cart-btn" data-product-id="${product._id}">Dodaj do koszyka</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Dodajemy event listener do karty produktu (otwiera quick view)
+                    productCard.addEventListener('click', (e) => {
+                        // Jeśli kliknięto w przycisk "Dodaj do koszyka", nie otwieraj quick view
+                        if (e.target.classList.contains('add-to-cart-btn')) {
+                            return;
+                        }
+                        
+                        console.log(`Kliknięto w produkt: ${product.nazwa} (ID: ${product._id}) - otwieram Quick View`);
+                        openQuickView(product);
+                    });
+                    
+                    // Dodajemy event listener do przycisku "Dodaj do koszyka"
+                    const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
+                    addToCartBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Zapobiegaj propagacji eventu do karty produktu
+                        console.log(`Kliknięto w "Dodaj do koszyka" dla produktu: ${product.nazwa} (ID: ${product._id})`);
+                        
+                        // Wywołaj naszą nową funkcję obsługującą dodawanie do koszyka
+                        handleAddToCart(product._id, product);
+                    });
+                    
+                    productsGrid.appendChild(productCard);
+                });
+
+            } catch (error) {
+                console.error('>>> BŁĄD W fetchAndDisplaySellerProducts:', error);
+                productsGrid.innerHTML = `<p class="no-products-message">Wystąpił krytyczny błąd podczas ładowania produktów: ${error.message}</p>`;
+            }
+        }
+
+        // Wywołaj funkcje
+        fetchSellerData();
+        fetchAndDisplaySellerProducts();
+        updateCartCount();
+    });
+</script>
+
+</body>
+</html>
