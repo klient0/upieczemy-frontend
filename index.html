@@ -1,4 +1,4 @@
-c<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -108,35 +108,39 @@ c<!DOCTYPE html>
             max-width: 90%;
         }
 
-        .search-box {
-            background: hsl(337, 94%, 86%);
-            padding: 4px;
-            width: 100%;
-            border-radius: 122px;
-            box-shadow: 1px 7px 56px rgba(254, 254, 254, 0.934);
-            text-align: center;
+        /* --- STYLE DLA WYSZUKIWARKI --- */
+        .location-search {
+            display: flex;
+            align-items: center;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            padding: 5px 15px;
+            transition: box-shadow 0.3s, background-color 0.3s;
+            cursor: pointer;
         }
-
-        .search-box input[type="search"] {
-            width: 100%;
-            padding: 7px;
-            border: 1px solid hsl(310, 2%, 52%);
-            border-radius: 122px;
-            font-size: 15px;
+        .location-search:focus-within {
+            background-color: #fff;
+            box-shadow: 0 0 0 2px #FF80AB;
+        }
+        .search-icon {
+            width: 18px;
+            height: 18px;
+            fill: #888;
+            margin-right: 8px;
+        }
+        #search-input {
+            border: none;
+            background: transparent;
             outline: none;
-            text-align: center;
-            box-sizing: border-box;
+            font-size: 14px;
+            width: 150px;
+            transition: width 0.3s;
         }
-
-        .search-box input[type="search"]:focus {
-            border-color: hsl(308, 44%, 86%);
-            box-shadow: 0 0 0 2px hsl(308, 44%, 86%);
+        #search-input::placeholder {
+            color: #aaa;
         }
-
-        .search-box input[type="search"]::placeholder {
-            font-weight: 600;
-            font-family: 'Arial';
-            color: #0000004e;
+        #search-input:focus {
+            width: 200px;
         }
 
         .suggestions-box {
@@ -147,7 +151,7 @@ c<!DOCTYPE html>
             background-color: white;
             border: 1px solid #ddd;
             border-top: none;
-            border-radius: 0 0 15px 15px;
+            border-radius: 0 0 20px 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             max-height: 200px;
             overflow-y: auto;
@@ -169,20 +173,27 @@ c<!DOCTYPE html>
         }
 
         /* --- STYLE DLA PANELU LOGOWANIA --- */
-        .login-button {
+        .header-buttons-container {
             position: absolute;
-            top: 20px;
+            top: 25px;
             right: 20px;
-            padding: 10px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .login-button {
+            padding: 4px 10px;
             background-color: #FF80AB;
             color: white;
             border: none;
             border-radius: 20px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s;
-            z-index: 5;
+            text-decoration: none;
         }
 
         .login-button:hover {
@@ -274,7 +285,6 @@ c<!DOCTYPE html>
             display: none !important;
         }
 
-        /* --- DODATKOWE STYLE DLA PRZEŁĄCZANIA FORMULARZY --- */
         .toggle-form-link {
             margin-top: 15px;
             font-size: 14px;
@@ -291,7 +301,6 @@ c<!DOCTYPE html>
             text-decoration: underline;
         }
 
-        /* --- STYLE DLA POWIADOMIEŃ --- */
         .notification {
             position: fixed;
             top: 20px;
@@ -307,39 +316,129 @@ c<!DOCTYPE html>
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        .notification.success {
-            background-color: #4CAF50; /* Zielony */
+        .notification.success { background-color: #4CAF50; }
+        .notification.error { background-color: hsl(0, 99%, 48%); }
+        .notification.info { background-color: #2196F3; }
+
+        #kontoBtn { background-color: #0b0b0b; }
+        #kontoBtn:hover { background-color: #ff80ab; }
+        #loginBtn { background-color: #00f500; }
+        #loginBtn:hover { background-color: #18c234; }
+
+        /* --- NOWE STYLE DLA IKON W NAGŁÓWKU --- */
+        .icon-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            border-radius: 50%;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+            position: relative;
+        }
+        .icon-button:hover {
+            background-color: #f0f0f0;
+            color: #FF80AB;
+        }
+        .icon-button svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+        .cart-count, .favorites-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e91e63;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .notification.error {
-            background-color: #f44336; /* Czerwony */
+        /* --- STYLE DLA DYMKÓW (TOOLTIPS) --- */
+        .icon-button::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 111%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 4px 4px;
+            border-radius: 6px;
+            font-size: 9px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1002;
+        }
+        .icon-button::before {
+            content: "";
+            position: absolute;
+            bottom: 80%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #333;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1002;
+        }
+        .icon-button:hover::after,
+        .icon-button:hover::before {
+            opacity: 1;
+            visibility: visible;
         }
 
-        .notification.info {
-            background-color: #2196F3; /* Niebieski */
+        /* --- STYLE DLA MENU KONTA --- */
+        .account-dropdown {
+            position: relative;
+            display: inline-block;
         }
-
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1001;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .account-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+        .dropdown-menu a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+        }
+        
         /* --- ANIMACJE --- */
-        @keyframes gentle-sway {
-            0%, 100% { transform: rotate(-2deg); }
-            50% { transform: rotate(2deg); }
-        }
-        @keyframes hold-gentle {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-3px) scale(1.05); }
-        }
-        @keyframes blink {
-            0%, 90%, 100% { transform: scaleY(1); }
-            95% { transform: scaleY(0.1); }
-        }
-        @keyframes hat-bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-3px); }
-        }
-        @keyframes sparkle {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
+        @keyframes gentle-sway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+        @keyframes hold-gentle { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.05); } }
+        @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+        @keyframes hat-bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-3px); } }
+        @keyframes sparkle { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
     </style>
 </head>
 <body>
@@ -362,63 +461,62 @@ c<!DOCTYPE html>
                 </div>
             </div>
         </div>
-        <button id="loginBtn" class="login-button">Zaloguj się</button>
+        <div class="header-buttons-container">
+            <!-- NOWE IKONY - UKRYTE DOMYŚLNIE -->
+            <a href="/powiadomienia" class="icon-button hidden" aria-label="Powiadomienia" data-tooltip="Powiadomienia">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            </a>
+            <a href="/koszyk" class="icon-button hidden" aria-label="Koszyk" data-tooltip="Koszyk">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span class="cart-count hidden">0</span>
+            </a>
+            <a href="/wiadomosci" class="icon-button hidden" aria-label="Wiadomości" data-tooltip="Wiadomości">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </a>
+            <a href="/ulubione" class="icon-button hidden" aria-label="Ulubione" data-tooltip="Ulubione">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span class="favorites-count hidden">0</span>
+            </a>
+            <!-- KONIEC NOWYCH IKON -->
+
+            <a href="#" id="logoutBtn" class="icon-button hidden" aria-label="Wyloguj" data-tooltip="Wyloguj">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            </a>
+            
+            <div class="account-dropdown">
+                <a id="kontoBtn" href="profil.html" class="login-button hidden">Konto</a>
+                <div class="dropdown-menu">
+                    <a href="edit-profile.html">Dane użytkownika</a>
+                    <a href="platnosci.html">Płatności</a>
+                </div>
+            </div>
+
+            <button id="loginBtn" class="login-button">Zaloguj</button>
+        </div>
     </header>
 
-    <!-- ZAKTUALIZOWANY PANEL LOGOWANIA Z OPCJĄ REJESTRACJI -->
     <div id="login-panel" class="login-panel hidden">
         <div class="login-content">
             <span class="close-btn" id="closeBtn">&times;</span>
-
-            <!-- FORMULARZ LOGOWANIA -->
             <div id="login-form-container">
                 <h2>Logowanie</h2>
                 <form id="login-form">
-                    <div class="form-group">
-                        <label for="email">Adres e-mail:</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Hasło:</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
+                    <div class="form-group"><label for="email">Adres e-mail:</label><input type="email" id="email" name="email" required></div>
+                    <div class="form-group"><label for="password">Hasło:</label><input type="password" id="password" name="password" required></div>
                     <button type="submit">Zaloguj się</button>
                 </form>
                 <p class="toggle-form-link">Nie masz konta? <a href="#" id="show-register">Utwórz je</a></p>
             </div>
-
-            <!-- FORMULARZ REJESTRACJI -->
             <div id="register-form-container" class="hidden">
                 <h2>Utwórz konto</h2>
                 <form id="register-form">
-                    <div class="form-group">
-                        <label for="new-email">Adres e-mail:</label>
-                        <input type="email" id="new-email" name="new_email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-password">Hasło:</label>
-                        <input type="password" id="new-password" name="new_password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-username">Nazwa użytkownika:</label>
-                        <input type="text" id="new-username" name="new_username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="city">Miasto:</label>
-                        <input type="text" id="city" name="city" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="postal-code">Kod pocztowy:</label>
-                        <input type="text" id="postal-code" name="postal_code" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Adres:</label>
-                        <input type="text" id="address" name="address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Numer telefonu:</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
+                    <div class="form-group"><label for="new-email">Adres e-mail:</label><input type="email" id="new-email" name="new_email" required></div>
+                    <div class="form-group"><label for="new-password">Hasło:</label><input type="password" id="new-password" name="new_password" required></div>
+                    <div class="form-group"><label for="new-username">Nazwa użytkownika:</label><input type="text" id="new-username" name="new_username" required></div>
+                    <div class="form-group"><label for="city">Miasto:</label><input type="text" id="city" name="city" required></div>
+                    <div class="form-group"><label for="postal-code">Kod pocztowy:</label><input type="text" id="postal-code" name="postal_code" required></div>
+                    <div class="form-group"><label for="address">Adres:</label><input type="text" id="address" name="address" required></div>
+                    <div class="form-group"><label for="phone">Numer telefonu:</label><input type="tel" id="phone" name="phone" required></div>
                     <button type="submit">Zarejestruj się</button>
                 </form>
                 <p class="toggle-form-link">Masz już konto? <a href="#" id="show-login">Zaloguj się</a></p>
@@ -428,7 +526,8 @@ c<!DOCTYPE html>
     
     <main class="main-container">
         <div class="search-wrapper">
-            <div class="search-box">
+            <div class="location-search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="search-icon"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                 <input type="search" id="search-input" placeholder="Wyszukaj miasto..." aria-label="Wyszukaj miasto"/>
             </div>
             <div id="suggestions-box" class="suggestions-box" style="display: none;"></div>
@@ -436,148 +535,364 @@ c<!DOCTYPE html>
     </main>
 
     <script>
-document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Menedżer Autentykacji ---
+        const AuthManager = {
+            channelName: 'auth_channel_upieczemy',
+            channel: null,
 
-    // --- ELEMENTY DOM ---
-    const loginBtn = document.getElementById('loginBtn');
-    const loginPanel = document.getElementById('login-panel');
-    const closeBtn = document.getElementById('closeBtn');
-    const searchInput = document.getElementById('search-input');
-    const suggestionsBox = document.getElementById('suggestions-box');
+            init() {
+                // --- KROK 1: Sprawdź sygnały wylogowania PRZED wszystkim innym ---
+                const urlParams = new URLSearchParams(window.location.search);
+                const logoutFromUrl = urlParams.get('logout') === 'true';
+                const logoutFromSession = sessionStorage.getItem('just_logged_out') === 'true';
 
-    const loginFormContainer = document.getElementById('login-form-container');
-    const registerFormContainer = document.getElementById('register-form-container');
-    const showRegisterLink = document.getElementById('show-register');
-    const showLoginLink = document.getElementById('show-login');
+                if (logoutFromUrl || logoutFromSession) {
+                    console.log('Wykryto wylogowanie (z URL lub sessionStorage). Wymuszam czyszczenie stanu.');
+                    
+                    // Wymusowe czyszczenie, na wszelki wypadek
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    
+                    // Wyczyść flagi, aby nie wpływały na kolejne odświeżenia
+                    sessionStorage.removeItem('just_logged_out');
+                    if (logoutFromUrl) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    
+                    this.showNotification('Zostałeś wylogowany pomyślnie.', 'success');
+                }
 
-    const loginForm = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
+                // --- KROK 2: Standardowa inicjalizacja ---
+                console.log('AuthManager: Inicjalizacja...');
+                try {
+                    this.channel = new BroadcastChannel(this.channelName);
+                    this.channel.onmessage = (event) => {
+                        if (event.data && event.data.type === 'logout') {
+                            console.log('AuthManager: Wykryto sygnał wylogowania z innej karty. Czyszczę stan.');
+                            // Wywołaj wylogowanie, ale bez przekierowania i bez wysyłania kolejnego sygnału
+                            this.performLogout(false, false);
+                        }
+                    };
+                } catch (e) {
+                    console.error("BroadcastChannel nie jest wspierany.", e);
+                }
 
-    // --- LOGIKA WYSZUKIWARKI ---
-    const fetchSuggestions = async (query) => {
-        if (query.length < 2) { 
-            suggestionsBox.style.display = 'none'; 
-            return; 
-        }
-        try {
-            const response = await fetch(`http://localhost:5000/api/suggestions?q=${encodeURIComponent(query)}`);
-            const suggestions = await response.json();
-            suggestionsBox.innerHTML = '';
-            if (suggestions.length > 0) {
-                suggestions.forEach(city => {
-                    const item = document.createElement('div');
-                    item.classList.add('suggestion-item');
-                    item.textContent = city;
-                    item.addEventListener('click', () => { 
-                        window.location.href = `/uzytkownicy/${encodeURIComponent(city)}`; 
-                    });
-                    suggestionsBox.appendChild(item);
+                this.checkAuthStatus();
+                this.setupEventListeners();
+            },
+
+            setupEventListeners() {
+                this.loginBtn = document.getElementById('loginBtn');
+                this.logoutBtn = document.getElementById('logoutBtn');
+                this.kontoBtn = document.getElementById('kontoBtn');
+                this.loginPanel = document.getElementById('login-panel');
+                this.closeBtn = document.getElementById('closeBtn');
+                this.loginForm = document.getElementById('login-form');
+                this.registerForm = document.getElementById('register-form');
+                this.loginFormContainer = document.getElementById('login-form-container');
+                this.registerFormContainer = document.getElementById('register-form-container');
+                this.showRegisterLink = document.getElementById('show-register');
+                this.showLoginLink = document.getElementById('show-login');
+
+                this.loginBtn?.addEventListener('click', () => this.openLoginPanel());
+                this.closeBtn?.addEventListener('click', () => this.closeLoginPanel());
+                this.loginPanel?.addEventListener('click', (event) => {
+                    if (event.target === this.loginPanel) this.closeLoginPanel();
                 });
-                suggestionsBox.style.display = 'block';
-            } else { 
-                suggestionsBox.style.display = 'none'; 
+                this.showRegisterLink?.addEventListener('click', (e) => { e.preventDefault(); this.switchToRegisterForm(); });
+                this.showLoginLink?.addEventListener('click', (e) => { e.preventDefault(); this.switchToLoginForm(); });
+                this.loginForm?.addEventListener('submit', (event) => this.handleLogin(event));
+                this.registerForm?.addEventListener('submit', (event) => this.handleRegister(event));
+                this.logoutBtn?.addEventListener('click', () => this.handleLogoutClick());
+            },
+
+            checkAuthStatus() {
+                const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                const loginBtn = document.getElementById('loginBtn');
+                const logoutBtn = document.getElementById('logoutBtn');
+                const kontoBtn = document.getElementById('kontoBtn');
+                const iconButtons = document.querySelectorAll('.icon-button');
+
+                if (token) {
+                    loginBtn?.classList.add('hidden');
+                    logoutBtn?.classList.remove('hidden');
+                    kontoBtn?.classList.remove('hidden');
+                    iconButtons.forEach(btn => btn.classList.remove('hidden'));
+                    if (user.nazwaUzytkownika && kontoBtn) {
+                        kontoBtn.textContent = user.nazwaUzytkownika;
+                    }
+                    this.fetchFavoriteProducts();
+                } else {
+                    loginBtn?.classList.remove('hidden');
+                    logoutBtn?.classList.add('hidden');
+                    kontoBtn?.classList.add('hidden');
+                    iconButtons.forEach(btn => btn.classList.add('hidden'));
+                    if (kontoBtn) kontoBtn.textContent = 'Konto';
+                }
+            },
+
+            openLoginPanel() {
+                this.loginPanel.classList.remove('hidden');
+                this.loginForm.reset();
+            },
+            
+            closeLoginPanel() {
+                this.loginForm.reset();
+                this.loginPanel.classList.add('hidden');
+            },
+            
+            switchToRegisterForm() {
+                this.loginForm.reset();
+                this.loginFormContainer.classList.add('hidden');
+                this.registerFormContainer.classList.remove('hidden');
+            },
+            
+            switchToLoginForm() {
+                this.registerForm.reset();
+                this.registerFormContainer.classList.add('hidden');
+                this.loginFormContainer.classList.remove('hidden');
+            },
+
+            async handleLogin(event) {
+                event.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/auth/logowanie', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, haslo: password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.uzytkownik));
+                        
+                        this.checkAuthStatus();
+                        this.closeLoginPanel();
+                        this.showNotification('Zalogowano pomyślnie!', 'success');
+                    } else {
+                        this.showNotification(data.komunikat || 'Błąd logowania. Sprawdź dane.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Błąd sieciowy:', error);
+                    this.showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error');
+                }
+            },
+
+            async handleRegister(event) {
+                event.preventDefault();
+                const daneRejestracji = {
+                    email: document.getElementById('new-email').value,
+                    haslo: document.getElementById('new-password').value,
+                    nazwaUzytkownika: document.getElementById('new-username').value,
+                    miasto: document.getElementById('city').value,
+                    kodPocztowy: document.getElementById('postal-code').value,
+                    adres: document.getElementById('address').value,
+                    telefon: document.getElementById('phone').value
+                };
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/auth/rejestracja', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(daneRejestracji)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        this.showNotification('Rejestracja zakończona! Sprawdź swoją skrzynkę e-mail, otrzymasz od nas wiadomość powitalną.', 'success');
+                        this.registerFormContainer.classList.add('hidden');
+                        this.loginFormContainer.classList.remove('hidden');
+                        this.registerForm.reset();
+                    } else {
+                        this.showNotification(data.komunikat || 'Błąd rejestracji.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Błąd sieciowy:', error);
+                    this.showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error');
+                }
+            },
+
+            handleLogoutClick() {
+                console.log('AuthManager: Kliknięto "Wyloguj". Rozpoczynam proces.');
+                this.performLogout(true, true);
+            },
+
+            async performLogout(shouldBroadcast = false, shouldRedirect = true) {
+                console.log(`AuthManager: Wykonuję wylogowanie. Broadcast: ${shouldBroadcast}, Redirect: ${shouldRedirect}`);
+                
+                try {
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        await fetch('http://localhost:5000/api/auth/logout', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'x-auth-token': token }
+                        });
+                        console.log('AuthManager: Serwer poinformowany o wylogowaniu.');
+                    }
+                } catch (error) {
+                    console.error('AuthManager: Błąd komunikacji z serwerem:', error);
+                }
+                
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                console.log('AuthManager: Wyczyszczono localStorage.');
+                
+                if (shouldRedirect) {
+                    sessionStorage.setItem('just_logged_out', 'true');
+                }
+
+                if (shouldBroadcast && this.channel) {
+                    this.channel.postMessage({ type: 'logout' });
+                    console.log('AuthManager: Wysłano sygnał wylogowania do innych kart.');
+                }
+
+                this.checkAuthStatus();
+                console.log('AuthManager: Zaktualizowano interfejs.');
+
+                if (shouldRedirect) {
+                    this.showNotification('Wylogowano. Przekierowuję...', 'success');
+                    setTimeout(() => {
+                        const timestamp = new Date().getTime();
+                        window.location.href = `http://127.0.0.1:5500/index.html?logout=true&t=${timestamp}`;
+                    }, 1000);
+                }
+            },
+            
+            async fetchFavoriteProducts() {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/products/favorites', {
+                        headers: { 'x-auth-token': token }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Błąd serwera.');
+                    }
+                    
+                    const products = await response.json();
+                    const favoritesCountSpan = document.querySelector('.favorites-count');
+                    
+                    if (products.length > 0) {
+                        favoritesCountSpan.textContent = products.length;
+                        favoritesCountSpan.classList.remove('hidden');
+                    } else {
+                        favoritesCountSpan.classList.add('hidden');
+                    }
+                } catch (error) {
+                    console.error('Błąd produktów ulubionych:', error);
+                }
+            },
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateX(0)';
+                }, 10);
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
             }
-        } catch (error) { 
-            console.error('Błąd podczas pobierania sugestii:', error); 
-            suggestionsBox.style.display = 'none'; 
-        }
-    };
+        };
 
-    let debounceTimer;
-    searchInput.addEventListener('input', (event) => {
-        const query = event.target.value;
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => { fetchSuggestions(query); }, 300);
-    });
+        // Inicjalizacja AuthManager
+        AuthManager.init();
 
-    document.addEventListener('click', (event) => {
-        if (!searchInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
-            suggestionsBox.style.display = 'none';
-        }
-    });
+        // Funkcje dla wyszukiwarki
+        const searchInput = document.getElementById('search-input');
+        const suggestionsBox = document.getElementById('suggestions-box');
+        const locationSearchContainer = document.querySelector('.location-search');
+        
+        locationSearchContainer.addEventListener('click', () => {
+            searchInput.focus();
+        });
 
-    // --- FUNKCJE POMOCNICZE (LOGOWANIE/REJESTRACJA) ---
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => { notification.style.opacity = '1'; notification.style.transform = 'translateX(0)'; }, 10);
-        setTimeout(() => { notification.style.opacity = '0'; notification.style.transform = 'translateX(100%)'; setTimeout(() => notification.remove(), 300); }, 3000);
-    }
+        function handleRedirect(city) {
+    if (!city) return;
+    console.log(`>>> PRZEKIEROWUJĘ NA: /uzytkownicy-w-miescie.html z miastem: "${city}" <<<`);
+    
+    // --- TO JEST KLUCZOWA LINIA ---
+    // Upewnij się, że ścieżka '/uzytkownicy-w-miescie.html' pasuje do nazwy Twojego pliku!
+    window.location.href = `/uzytkownicy-w-miescie.html?city=${encodeURIComponent(city)}`;
+}
 
-    function updateUIForLoggedInUser(user) {
-        loginBtn.textContent = `Witaj, ${user.nazwaUzytkownika || user.email}`;
-        loginBtn.removeEventListener('click', openLoginPanel);
-        loginBtn.addEventListener('click', handleLogout);
-        loginBtn.style.backgroundColor = '#e91e63';
-    }
-
-    function updateUIForLoggedOutUser() {
-        loginBtn.textContent = 'Zaloguj się';
-        loginBtn.removeEventListener('click', handleLogout);
-        loginBtn.addEventListener('click', openLoginPanel);
-        loginBtn.style.backgroundColor = '#FF80AB';
-    }
-
-    function openLoginPanel() { loginPanel.classList.remove('hidden'); }
-    function closeLoginPanel() { loginPanel.classList.add('hidden'); }
-    function handleLogout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        updateUIForLoggedOutUser();
-        showNotification('Wylogowano pomyślnie.', 'success');
-    }
-
-    // --- OBSŁUGA PANELU LOGOWANIA ---
-    loginBtn.addEventListener('click', openLoginPanel);
-    closeBtn.addEventListener('click', closeLoginPanel);
-    loginPanel.addEventListener('click', (event) => { if (event.target === loginPanel) { closeLoginPanel(); } });
-    showRegisterLink.addEventListener('click', (event) => { event.preventDefault(); loginFormContainer.classList.add('hidden'); registerFormContainer.classList.remove('hidden'); });
-    showLoginLink.addEventListener('click', (event) => { event.preventDefault(); registerFormContainer.classList.add('hidden'); loginFormContainer.classList.remove('hidden'); });
-
-    // --- LOGIKA PRZESYŁANIA DANYCH ---
-    loginForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        try {
-            const response = await fetch('http://localhost:5000/api/auth/logowanie', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, haslo: password }) });
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.uzytkownik));
-                updateUIForLoggedInUser(data.uzytkownik);
-                closeLoginPanel();
-                showNotification('Zalogowano pomyślnie!', 'success');
-            } else {
-                showNotification(data.komunikat || 'Błąd logowania. Sprawdź dane.', 'error');
+        const fetchSuggestions = async (query) => {
+            console.log(`>>> POBIERANIE SUGESTII DLA ZAPYTANIA: "${query}" <<<`);
+            
+            if (query.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
             }
-        } catch (error) { console.error('Błąd sieciowy:', error); showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error'); }
-    });
-
-    registerForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const daneRejestracji = { email: document.getElementById('new-email').value, haslo: document.getElementById('new-password').value, nazwaUzytkownika: document.getElementById('new-username').value, miasto: document.getElementById('city').value, kodPocztowy: document.getElementById('postal-code').value, adres: document.getElementById('address').value, telefon: document.getElementById('phone').value };
-        try {
-            const response = await fetch('http://localhost:5000/api/auth/rejestracja', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(daneRejestracji) });
-            const data = await response.json();
-            if (response.ok) {
-                showNotification('Rejestracja zakończona! Możesz się teraz zalogować.', 'success');
-                registerFormContainer.classList.add('hidden');
-                loginFormContainer.classList.remove('hidden');
-                registerForm.reset();
-            } else {
-                showNotification(data.komunikat || 'Błąd rejestracji.', 'error');
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/suggestions?q=${encodeURIComponent(query)}`);
+                console.log(`>>> STATUS ODPOWIEDZI Z API SUGESTII: ${response.status} <<<`);
+                
+                const suggestions = await response.json();
+                console.log(`>>> ODEBRANE SUGESTIE: ${JSON.stringify(suggestions)} <<<`);
+                
+                suggestionsBox.innerHTML = '';
+                
+                if (suggestions.length > 0) {
+                    suggestions.forEach(city => {
+                        const item = document.createElement('div');
+                        item.classList.add('suggestion-item');
+                        item.textContent = city;
+                        item.addEventListener('click', () => {
+                            console.log(`>>> WYBRANO MIASTO Z SUGESTII: "${city}" <<<`);
+                            handleRedirect(city);
+                        });
+                        suggestionsBox.appendChild(item);
+                    });
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Błąd podczas pobierania sugestii:', error);
+                suggestionsBox.style.display = 'none';
             }
-        } catch (error) { console.error('Błąd sieciowy:', error); showNotification('Wystąpił problem z połączeniem. Spróbuj ponownie.', 'error'); }
-    });
+        };
 
-    // --- SPRAWDZENIE STANU ZALOGOWANIA PRZY ŁADOWANIU STRONY ---
-    const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (token && user) { updateUIForLoggedInUser(user); }
-});
-</script>
+        let debounceTimer;
+        searchInput.addEventListener('input', (event) => {
+            const query = event.target.value;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
+        });
+
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                const city = searchInput.value.trim();
+                console.log(`>>> WYSZUKIWANIE MIASTA PRZYCISKIEM ENTER: "${city}" <<<`);
+                handleRedirect(city);
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!searchInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    });
+    </script>
 </body>
 </html>
