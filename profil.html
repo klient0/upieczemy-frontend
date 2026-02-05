@@ -90,31 +90,33 @@
         
         /* --- OSTATECZNA, NAJBARDZIEJSZA WERSJA KARTY PRODUKTU --- */
         .item-card { 
-            position: relative; /* Kontekst dla quick view */
+            position: relative;
             display: flex; 
-            align-items: stretch; /* <--- ZMIANA NA 'stretch' */
+            height: 200px; 
+            align-items: flex-start; 
             border: 1px solid #ddd; 
             border-radius: 10px; 
             padding: 15px; 
             background-color: #fafafa; 
             transition: transform 0.2s, box-shadow 0.2s; 
             gap: 20px;
-            overflow: hidden; /* Zapobiega wychodzeniu elementów poza kartę */
-            cursor: pointer; /* Dodajemy kursor wskazujący możliwość kliknięcia */
+            overflow: hidden; 
+            cursor: pointer;
         }
         .item-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         
         .product-image-container {
             flex: 0 0 55%;
-    aspect-ratio: 1 / 1; /* <-- DODAJ TĘ LINIĘ, ABY KONTENER BYŁ KWADRATOWY */
+            height: 100%; 
+            overflow: hidden; 
             position: relative;
             cursor: pointer;
         }
 
         .product-image-container img {
             width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
+            height: 100%; 
+            object-fit: cover; 
             border-radius: 5px;
             transition: opacity 0.3s;
         }
@@ -137,7 +139,7 @@
             font-size: 16px;
             opacity: 0;
             transition: opacity 0.3s;
-            pointer-events: none; /* Blokujemy klikanie w overlay, aby kliknięcie szło na obrazek */
+            pointer-events: none;
             border-radius: 5px;
         }
         .product-image-container:hover .product-image-overlay {
@@ -158,7 +160,7 @@
             cursor: pointer;
             opacity: 0;
             transition: opacity 0.3s;
-            pointer-events: auto; /* Włączamy klikanie */
+            pointer-events: auto;
         }
         .product-image-container:hover .change-image-btn-overlay {
             opacity: 1;
@@ -170,13 +172,18 @@
             display: flex;
             flex-direction: column;
             text-align: left;
+            height: 100%; 
+            overflow: hidden; 
         }
 
         .product-details-container h4 { 
             margin: 0 0 5px 0; 
             color: #333; 
             font-size: 1.2rem;
-            flex-shrink: 0; /* Zapobiega kurczeniu się nagłówka */
+            flex-shrink: 0;
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
         }
         
         /* --- OSTATECZNA, DZIAŁAJĄCA WERSJA DLA OPISU --- */
@@ -185,46 +192,63 @@
             color: #777; 
             font-size: 14px; 
             line-height: 1.4;
-            
-            /* --- KLUCZOWE WŁAŚCIWOŚCI --- */
             display: -webkit-box;
-            -webkit-line-clamp: 3; /* Pokaż max. 3 linie */
-            /* --- NOWE, KLUCZOWE WŁAŚCIWOŚCI --- */
-            overflow-wrap: break-word; /* Wymusza łamanie zbyt długich słów */
-            word-break: break-word;   /* Zapewnia kompatybilność */
-            /* --------------------------------------- */
+            -webkit-line-clamp: 3;
+            overflow-wrap: break-word;
+            word-break: break-word;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            flex-grow: 1; /* Niechaj ten element wypełni dostępną przestrzeń */
-            min-height: 0; /* Zapobiega problemom z flex-grow w Chrome */
-            /* ------------------------------------------- */
+            flex-grow: 1;
+            min-height: 0;
         }
 
-        .product-details-container .price { 
-            font-size: 20px; 
-            font-weight: bold; 
-            color: #4CAF50; 
-            margin-top: auto; /* Wypchnij cenę na sam dół */
-            margin-bottom: 15px; 
-            flex-shrink: 0; /* Zapobiega kurczeniu się ceny */
+        /* --- NOWE STYLE DLA PASKÓW Z CENAMI --- */
+        .price-pills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+            margin-bottom: 15px;
+            flex-shrink: 0;
         }
-        
-        .product-size {
-            display: inline-block;
+
+        .price-pill {
             background-color: #f0f0f0;
             color: #333;
-            padding: 3px 8px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 15px;
             font-size: 12px;
             font-weight: bold;
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .price-pill .price-pill-size {
+            color: #666;
+            font-weight: normal;
+        }
+        
+        .price-pill .price-pill-value {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        /* Stary styl ceny jako rezerwa dla produktów z jedną ceną */
+        .product-details-container .price { 
+            font-size: 15px; 
+            font-weight: bold; 
+            color: #4CAF50; 
+            margin-top: auto;
+            margin-bottom: 15px; 
+            flex-shrink: 0;
         }
         
         .item-actions { 
             display: flex; 
             justify-content: space-around; 
-            margin-top: auto; /* Wypchnij przyciski na sam dół */
-            flex-shrink: 0; /* Zapobiega kurczeniu się przycisków */
+            margin-top: auto;
+            flex-shrink: 0;
         }
         
         .item-actions button { padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; transition: background-color 0.3s; flex-grow: 1; margin: 0 5px;}
@@ -292,9 +316,9 @@
             display: flex;
             padding: 20px;
             gap: 20px;
-            flex: 1;               /* <-- DODAJ: zajmuje pozostałą przestrzeń w pionie */
-            overflow-y: auto;      /* <-- DODAJ: przewijanie pojawia się tutaj */
-            min-height: 0;         /* <-- DODAJ: kluczowe, aby flexbox mógł zmniejszyć element */
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
         
         .quick-view-image {
@@ -324,9 +348,6 @@
         }
         
         .quick-view-price {
-            font-size: 22px;
-            font-weight: bold;
-            color: #4CAF50;
             margin-bottom: 15px;
         }
         
@@ -334,20 +355,16 @@
             margin-bottom: 20px;
             line-height: 1.5;
             color: #555;
-            /* Pozwalamy opisowi rosnąć i wypełniać dostępną przestrzeń */
-            flex-grow: 1; 
-            /* Przewijanie jest obsługiwane przez element nadrzędny (.quick-view-body) */
-            /* --- DODANE WŁAŚCIWOŚCI DO ŁAMANIA SŁÓW --- */
-            overflow-wrap: break-word; /* Kluczowa właściwość - łamie słowo, jeśli jest za długie */
-            word-break: break-word;   /* Zapewnia kompatybilność ze starszymi przeglądarkami */
-            /* --------------------------------------------- */
+            flex-grow: 1;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         
         .quick-view-actions {
             display: flex;
             gap: 10px;
             margin-top: auto;
-            justify-content: flex-end; /* <-- DODAJ TĘ LINIĘ */
+            justify-content: flex-end;
         }
         
         .quick-view-actions button {
@@ -406,38 +423,28 @@
         .delete-confirmation { display: flex; justify-content: center; margin-top: 20px; }
         .delete-confirmation button { width: auto; padding: 10px 20px; }
         
-        /* --- STYLE DLA WYBORU ROZMIARU --- */
-        .size-selector {
+        /* --- ZMODYFIKOWANE STYLE DLA INFORMACJI O ROZMIARACH --- */
+        .size-info {
             display: flex;
-            gap: 10px;
             margin-bottom: 15px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            padding: 15px;
         }
         
-        .size-option {
+        .size-info-item {
             flex: 1;
             text-align: center;
             padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
         }
         
-        .size-option:hover {
-            border-color: #FF80AB;
-        }
-        
-        .size-option.selected {
-            border-color: #FF80AB;
-            background-color: #fff0f5;
-        }
-        
-        .size-option .size-name {
+        .size-info-item .size-name {
             font-weight: bold;
             margin-bottom: 5px;
+            color: #333;
         }
         
-        .size-option .size-desc {
+        .size-info-item .size-desc {
             font-size: 12px;
             color: #666;
         }
@@ -502,17 +509,20 @@
         @media (max-width: 768px) {
             .item-card {
                 flex-direction: column;
-                align-items: center; /* Wyśrodkuj zawartość w mobile */
+                align-items: center;
+                height: auto; 
             }
             .product-image-container {
-                flex: none; /* Anuluj flex */
+                flex: none;
                 width: 100%;
                 max-width: 200px;
+                height: 200px; 
             }
             .product-details-container {
                 width: 100%;
                 margin-top: 15px;
                 text-align: center;
+                height: auto; 
             }
             .items-grid {
                 grid-template-columns: 1fr;
@@ -528,7 +538,7 @@
                 max-height: 250px;
             }
             
-            .size-selector {
+            .size-info {
                 flex-direction: column;
             }
             
@@ -642,7 +652,6 @@
                 <div class="quick-view-details">
                     <h3 id="quickViewTitle" class="quick-view-title"></h3>
                     <div id="quickViewPrice" class="quick-view-price"></div>
-                    <div id="quickViewSize" class="product-size"></div>
                     <p id="quickViewDescription" class="quick-view-description"></p>
                     <div class="quick-view-actions">
                         <button id="quickViewEdit" class="quick-view-edit">Edytuj</button>
@@ -664,17 +673,17 @@
                 <div class="form-group"><label for="product-description">Opis</label><textarea id="product-description" required></textarea></div>
                 
                 <div class="form-group">
-                    <label>Wybierz rozmiar produktu</label>
-                    <div class="size-selector">
-                        <div class="size-option" data-size="mini">
+                    <label>Informacje o rozmiarach produktu</label>
+                    <div class="size-info">
+                        <div class="size-info-item">
                             <div class="size-name">Mini</div>
                             <div class="size-desc">Mały rozmiar, idealny na pojedyncze osoby</div>
                         </div>
-                        <div class="size-option selected" data-size="normal">
+                        <div class="size-info-item">
                             <div class="size-name">Normal</div>
                             <div class="size-desc">Standardowy rozmiar dla 2-4 osób</div>
                         </div>
-                        <div class="size-option" data-size="max">
+                        <div class="size-info-item">
                             <div class="size-name">Max</div>
                             <div class="size-desc">Duży rozmiar dla większych grup</div>
                         </div>
@@ -682,8 +691,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Ceny dla poszczególnych rozmiarów (opcjonalnie)</label>
-                    <div class="price-input-hint">Wpisz cenę tylko dla rozmiarów, które oferujesz. Cena dla wybranego rozmiaru jest wymagana.</div>
+                    <label>Ceny dla poszczególnych rozmiarów (wypełnij pola dla rozmiarów, które oferujesz)</label>
+                    <div class="price-input-hint">Wpisz cenę dla każdego rozmiaru, który chcesz oferować. Musisz wypełnić co najmniej jedno pole.</div>
                     <div class="price-inputs-container">
                         <div class="price-input-group">
                             <label for="price-mini">Cena (Mini):</label>
@@ -717,17 +726,17 @@
                 <div class="form-group"><label for="edit-product-description">Opis</label><textarea id="edit-product-description" required></textarea></div>
                 
                 <div class="form-group">
-                    <label>Wybierz rozmiar produktu</label>
-                    <div class="size-selector">
-                        <div class="size-option" data-size="mini">
+                    <label>Informacje o rozmiarach produktu</label>
+                    <div class="size-info">
+                        <div class="size-info-item">
                             <div class="size-name">Mini</div>
                             <div class="size-desc">Mały rozmiar, idealny na pojedyncze osoby</div>
                         </div>
-                        <div class="size-option" data-size="normal">
+                        <div class="size-info-item">
                             <div class="size-name">Normal</div>
                             <div class="size-desc">Standardowy rozmiar dla 2-4 osób</div>
                         </div>
-                        <div class="size-option" data-size="max">
+                        <div class="size-info-item">
                             <div class="size-name">Max</div>
                             <div class="size-desc">Duży rozmiar dla większych grup</div>
                         </div>
@@ -735,8 +744,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Ceny dla poszczególnych rozmiarów (opcjonalnie)</label>
-                    <div class="price-input-hint">Wpisz cenę tylko dla rozmiarów, które oferujesz. Cena dla wybranego rozmiaru jest wymagana.</div>
+                    <label>Ceny dla poszczególnych rozmiarów (wypełnij pola dla rozmiarów, które oferujesz)</label>
+                    <div class="price-input-hint">Wpisz cenę dla każdego rozmiaru, który chcesz oferować. Musisz wypełnić co najmniej jedno pole.</div>
                     <div class="price-inputs-container">
                         <div class="price-input-group">
                             <label for="edit-price-mini">Cena (Mini):</label>
@@ -804,6 +813,35 @@
             }
         };
 
+        // --- NOWA FUNKCJA POMOCNICZA DO GENEROWANIA PASKÓW Z CENAMI ---
+        function generatePricePillsHTML(product) {
+            // Jeśli produkt ma obiekt cen dla różnych rozmiarów
+            if (product.ceny && typeof product.ceny === 'object' && Object.keys(product.ceny).length > 0) {
+                const pills = [];
+                const order = ['mini', 'normal', 'max'];
+
+                order.forEach(size => {
+                    if (product.ceny[size]) {
+                        const sizeLabel = size.charAt(0).toUpperCase() + size.slice(1);
+                        const price = product.ceny[size].toFixed(2);
+                        pills.push(`
+                            <div class="price-pill">
+                                <span class="price-pill-size">${sizeLabel}</span>
+                                <span class="price-pill-value">${price}zł</span>
+                            </div>
+                        `);
+                    }
+                });
+
+                if (pills.length > 0) {
+                    return `<div class="price-pills-container">${pills.join('')}</div>`;
+                }
+            }
+            
+            // W przeciwnym razie zwróć standardową cenę w starym formacie (dla kompatybilności)
+            return product.cena ? `<div class="price">${product.cena.toFixed(2)} zł</div>` : '<div class="price">Cena do uzgodnienia</div>';
+        }
+
         const loginBtn = document.getElementById('loginBtn');
         const kontoBtn = document.getElementById('kontoBtn');
         const profilePic = document.getElementById('profile-pic');
@@ -848,7 +886,6 @@
         const quickViewImage = document.getElementById('quickViewImage');
         const quickViewTitle = document.getElementById('quickViewTitle');
         const quickViewPrice = document.getElementById('quickViewPrice');
-        const quickViewSize = document.getElementById('quickViewSize');
         const quickViewDescription = document.getElementById('quickViewDescription');
         const quickViewEdit = document.getElementById('quickViewEdit');
         const quickViewDelete = document.getElementById('quickViewDelete');
@@ -871,20 +908,6 @@
         
         // ID produktu do usunięcia
         let productToDelete = null;
-
-        // Funkcje do obsługi rozmiaru
-        function setupSizeSelector(modalType = 'add') {
-            const sizeOptions = document.querySelectorAll(`#${modalType}ProductModal .size-option`);
-            
-            sizeOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    // Usuń klasę selected ze wszystkich opcji
-                    sizeOptions.forEach(opt => opt.classList.remove('selected'));
-                    // Dodaj klasę selected do klikniętej opcji
-                    option.classList.add('selected');
-                });
-            });
-        }
 
         const token = localStorage.getItem('token');
         if (!token) {
@@ -975,8 +998,6 @@
             }
         };
         
-      
-        
         // --- ZMODYFIKOWANA FUNKCJA DO POBIERANIA PRODUKTÓW Z QUICK VIEW --- 
         async function fetchUserProducts() {
             try {
@@ -991,9 +1012,12 @@
                         const mainImage = p.zdjecie 
                             ? p.zdjecie 
                             : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
-                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        
+                        // Użyj nowej funkcji do generowania pasków z cenami
+                        const pricePillsHTML = generatePricePillsHTML(p);
+                        
                         return `
-                            <div class="item-card" data-product-id="${p._id}" data-product-name="${p.nazwa}" data-product-description="${p.opis}" data-product-price="${p.cena}" data-product-size="${p.rozmiar || 'normal'}" data-product-image="${mainImage}">
+                            <div class="item-card" data-product-id="${p._id}" data-product-name="${p.nazwa}" data-product-description="${p.opis}" data-product-price="${p.cena}" data-product-image="${mainImage}" data-product-prices='${JSON.stringify(p.ceny || {})}'>
                                 <div class="product-image-container">
                                     <img src="${mainImage}" alt="${p.nazwa}">
                                     <div class="product-image-overlay"></div>
@@ -1001,9 +1025,8 @@
                                 </div>
                                 <div class="product-details-container">
                                     <h4>${p.nazwa}</h4>
-                                    <div class="product-size">Rozmiar: ${sizeLabel}</div>
                                     <p>${p.opis}</p>
-                                    <div class="price">${p.cena.toFixed(2)} zł</div>
+                                    ${pricePillsHTML}
                                     <div class="item-actions">
                                         <button class="edit-btn" data-product-id="${p._id}">Edytuj</button>
                                         <button class="delete-btn" data-product-id="${p._id}">Usuń</button>
@@ -1037,14 +1060,16 @@
                         const mainImage = p.zdjecie 
                             ? p.zdjecie 
                             : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
-                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        
+                        // Użyj nowej funkcji do generowania pasków z cenami
+                        const pricePillsHTML = generatePricePillsHTML(p);
+                        
                         return `
                             <div class="item-card">
                                 <img src="${mainImage}" alt="${p.nazwa}">
                                 <h4>${p.nazwa}</h4>
-                                <div class="product-size">Rozmiar: ${sizeLabel}</div>
                                 <p>${p.opis}</p>
-                                <div class="price">${p.cena.toFixed(2)} zł</div>
+                                ${pricePillsHTML}
                             </div>
                         `;
                     }).join('');
@@ -1068,8 +1093,10 @@
                 if (payments.length > 0) {
                     // POPRAWKA: Użyj p.produkt.zdjecie zamiast p.produkt.zdjecia
                     paymentsGrid.innerHTML = payments.map(p => {
-                        const sizeLabel = p.produkt.rozmiar ? p.produkt.rozmiar.charAt(0).toUpperCase() + p.produkt.rozmiar.slice(1) : 'Normal';
-                        return `<div class="item-card"><img src="${p.produkt.zdjecie || 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia'}" alt="${p.produkt.nazwa}"><h4>${p.produkt.nazwa}</h4><div class="product-size">Rozmiar: ${sizeLabel}</div><p>Kupujący: ${p.kupujacy ? p.kupujacy.nazwaUzytkownika : 'Nieznany'}</p><div class="price">${p.kwota.toFixed(2)} zł</div><div class="status">Status: ${p.status || 'Przetwarzany'}</div><div class="payment-date">Data: ${new Date(p.dataPlatnosci).toLocaleDateString('pl-PL')}</div></div>`;
+                        // Użyj nowej funkcji do generowania pasków z cenami
+                        const pricePillsHTML = generatePricePillsHTML(p.produkt);
+                        
+                        return `<div class="item-card"><img src="${p.produkt.zdjecie || 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia'}" alt="${p.produkt.nazwa}"><h4>${p.produkt.nazwa}</h4><p>Kupujący: ${p.kupujacy ? p.kupujacy.nazwaUzytkownika : 'Nieznany'}</p>${pricePillsHTML}<div class="status">Status: ${p.status || 'Przetwarzany'}</div><div class="payment-date">Data: ${new Date(p.dataPlatnosci).toLocaleDateString('pl-PL')}</div></div>`;
                     }).join('');
                 } else { paymentsGrid.innerHTML = `<p style="text-align: center; color: #888;">Nie masz jeszcze żadnych płatności.</p>`; }
             } catch (error) { console.error('Błąd płatności:', error); paymentsGrid.innerHTML = `<p style="color: red; text-align: center;">Wystąpił błąd podczas ładowania.</p>`; } finally {
@@ -1089,14 +1116,16 @@
                         const mainImage = p.zdjecie 
                             ? p.zdjecie 
                             : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
-                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        
+                        // Użyj nowej funkcji do generowania pasków z cenami
+                        const pricePillsHTML = generatePricePillsHTML(p);
+
                         return `
                             <div class="item-card">
                                 <img src="${mainImage}" alt="${p.nazwa}">
                                 <h4>${p.nazwa}</h4>
-                                <div class="product-size">Rozmiar: ${sizeLabel}</div>
                                 <p>Sprzedawca: ${p.sprzedawca.nazwaUzytkownika}</p>
-                                <div class="price">${p.cena.toFixed(2)} zł</div>
+                                ${pricePillsHTML}
                             </div>
                         `;
                     }).join('');
@@ -1118,14 +1147,16 @@
                         const mainImage = p.zdjecie 
                             ? p.zdjecie 
                             : 'https://via.placeholder.com/280x180.png?text=Brak+zdjęcia';
-                        const sizeLabel = p.rozmiar ? p.rozmiar.charAt(0).toUpperCase() + p.rozmiar.slice(1) : 'Normal';
+                        
+                        // Użyj nowej funkcji do generowania pasków z cenami
+                        const pricePillsHTML = generatePricePillsHTML(p);
+
                         return `
                             <div class="item-card">
                                 <img src="${mainImage}" alt="${p.nazwa}">
                                 <h4>${p.nazwa}</h4>
-                                <div class="product-size">Rozmiar: ${sizeLabel}</div>
                                 <p>Kupujący: ${p.kupujacy.nazwaUzytkownika}</p>
-                                <div class="price">${p.cena.toFixed(2)} zł</div>
+                                ${pricePillsHTML}
                             </div>
                         `;
                     }).join('');
@@ -1145,8 +1176,10 @@
                     myOrdersSection.classList.remove('hidden');
                     // POPRAWKA: Użyj o.produkt.zdjecie zamiast o.produkt.zdjecia
                     ordersGrid.innerHTML = orders.map(o => {
-                        const sizeLabel = o.produkt.rozmiar ? o.produkt.rozmiar.charAt(0).toUpperCase() + o.produkt.rozmiar.slice(1) : 'Normal';
-                        return `<div class="item-card"><h4>Zamówienie #${o._id.slice(-6)}</h4><p>Produkt: ${o.produkt.nazwa}</p><div class="product-size">Rozmiar: ${sizeLabel}</div><div class="price">${o.produkt.cena.toFixed(2)} zł</div><div class="status">Status: ${o.status || 'Przygotowywanie'}</div></div>`;
+                        // Użyj nowej funkcji do generowania pasków z cenami
+                        const pricePillsHTML = generatePricePillsHTML(o.produkt);
+                        
+                        return `<div class="item-card"><h4>Zamówienie #${o._id.slice(-6)}</h4><p>Produkt: ${o.produkt.nazwa}</p>${pricePillsHTML}<div class="status">Status: ${o.status || 'Przygotowywanie'}</div></div>`;
                     }).join('');
                 }
             } catch (error) { console.error('Błąd zamówień:', error); } finally {
@@ -1162,15 +1195,20 @@
             const name = card.dataset.productName;
             const description = card.dataset.productDescription;
             const price = parseFloat(card.dataset.productPrice);
-            const size = card.dataset.productSize;
             const image = card.dataset.productImage;
+            
+            // Pobierz dane o wszystkich cenach z atrybutu
+            const pricesData = JSON.parse(card.dataset.productPrices || '{}');
             
             currentQuickViewProductId = productId;
             
             quickViewTitle.textContent = name;
             quickViewDescription.textContent = description;
-            quickViewPrice.textContent = `${price.toFixed(2)} zł`;
-            quickViewSize.textContent = `Rozmiar: ${size.charAt(0).toUpperCase() + size.slice(1)}`;
+            
+            // Użyj funkcji generującej paski z cenami
+            const tempProduct = { cena: price, ceny: pricesData };
+            quickViewPrice.innerHTML = generatePricePillsHTML(tempProduct);
+            
             quickViewImage.src = image;
             quickViewImage.alt = name;
             
@@ -1219,15 +1257,6 @@
                 document.getElementById('edit-product-id').value = product._id;
                 document.getElementById('edit-product-name').value = product.nazwa;
                 document.getElementById('edit-product-description').value = product.opis;
-                
-                // Ustaw rozmiar produktu
-                const sizeOptions = document.querySelectorAll('#editProductModal .size-option');
-                sizeOptions.forEach(option => {
-                    option.classList.remove('selected');
-                    if (option.dataset.size === (product.rozmiar || 'normal')) {
-                        option.classList.add('selected');
-                    }
-                });
                 
                 // Ustaw ceny dla każdego rozmiaru
                 const ceny = product.ceny || {};
@@ -1346,15 +1375,8 @@
         // Obsługa modali
         addProductBtn.addEventListener('click', () => {
             addProductModal.classList.remove('hidden');
-            // Zresetuj formularz i ustaw domyślny rozmiar
+            // Zresetuj formularz
             document.getElementById('addProductForm').reset();
-            const sizeOptions = document.querySelectorAll('#addProductModal .size-option');
-            sizeOptions.forEach(option => {
-                option.classList.remove('selected');
-                if (option.dataset.size === 'normal') {
-                    option.classList.add('selected');
-                }
-            });
         });
         
         closeModalBtn.addEventListener('click', () => addProductModal.classList.add('hidden'));
@@ -1429,231 +1451,204 @@
             }
         });
         
-        // Obsługa formularzy dodawania produktu
-      // --- OBSŁUGA FORMULARZY (POPRAWIONA WERSJA) ---
-
-// Obsługa formularza dodawania produktu
-addProductForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    showLoading();
-    
-    const name = document.getElementById('product-name').value;
-    const description = document.getElementById('product-description').value;
-    const imageFile = document.getElementById('product-image').files[0];
-    const selectedSize = document.querySelector('#addProductModal .size-option.selected');
-    const size = selectedSize ? selectedSize.dataset.size : 'normal';
-    
-    // Pobierz ceny dla każdego rozmiaru
-    const priceMini = parseFloat(document.getElementById('price-mini').value) || 0;
-    const priceNormal = parseFloat(document.getElementById('price-normal').value) || 0;
-    const priceMax = parseFloat(document.getElementById('price-max').value) || 0;
-    
-    // Sprawdź, czy cena dla wybranego rozmiaru jest ustawiona
-    let finalPrice = 0;
-    if (size === 'mini') {
-        finalPrice = priceMini;
-        if (!priceMini || priceMini <= 0) {
-            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
-            hideLoading();
-            return;
-        }
-    } else if (size === 'normal') {
-        finalPrice = priceNormal;
-        if (!priceNormal || priceNormal <= 0) {
-            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
-            hideLoading();
-            return;
-        }
-    } else if (size === 'max') {
-        finalPrice = priceMax;
-        if (!priceMax || priceMax <= 0) {
-            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
-            hideLoading();
-            return;
-        }
-    }
-    
-    // Tworzymy obiekt z cenami
-    const ceny = {};
-    if (priceMini > 0) ceny.mini = priceMini;
-    if (priceNormal > 0) ceny.normal = priceNormal;
-    if (priceMax > 0) ceny.max = priceMax;
-    
-    // Tworzymy obiekt FormData do wysłania pliku i danych tekstowych
-    const formData = new FormData();
-    formData.append('nazwa', name);
-    formData.append('opis', description);
-    formData.append('cena', finalPrice);
-    formData.append('rozmiar', size);
-    formData.append('ceny', JSON.stringify(ceny));
-    if (imageFile) {
-        formData.append('productImage', imageFile); // Klucz 'productImage' musi być taki sam jak w backendzie!
-    }
-    
-    try {
-        const res = await fetch('http://localhost:5000/api/products', { 
-            method: 'POST', 
-            headers: { 
-                'x-auth-token': token 
-                // Nie ustawiamy 'Content-Type' - przeglądarka zrobi to automatycznie dla FormData
-            }, 
-            body: formData // Wysyłamy FormData zamiast JSON
-        });
-        
-        if (!res.ok) throw new Error('Błąd serwera');
-        
-        showNotification('Produkt dodany pomyślnie!', 'success');
-        addProductForm.reset(); 
-        addProductModal.classList.add('hidden');
-        
-        await fetchUserProducts();
-        myProductsSection.classList.remove('hidden');
-        
-    } catch (error) { 
-        console.error(error); 
-        showNotification('Błąd podczas dodawania produktu.', 'error'); 
-    } finally {
-        hideLoading();
-    }
-});
-
-// Obsługa formularza edycji produktu
-editProductForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    showLoading();
-    
-    const productId = document.getElementById('edit-product-id').value;
-    const name = document.getElementById('edit-product-name').value;
-    const description = document.getElementById('edit-product-description').value;
-    const imageFile = document.getElementById('edit-product-image').files[0];
-    const selectedSize = document.querySelector('#editProductModal .size-option.selected');
-    const size = selectedSize ? selectedSize.dataset.size : 'normal';
-    
-    // Pobierz ceny dla każdego rozmiaru
-    const priceMini = parseFloat(document.getElementById('edit-price-mini').value) || 0;
-    const priceNormal = parseFloat(document.getElementById('edit-price-normal').value) || 0;
-    const priceMax = parseFloat(document.getElementById('edit-price-max').value) || 0;
-    
-    // Sprawdź, czy cena dla wybranego rozmiaru jest ustawiona
-    let finalPrice = 0;
-    if (size === 'mini') {
-        finalPrice = priceMini;
-        if (!priceMini || priceMini <= 0) {
-            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
-            hideLoading();
-            return;
-        }
-    } else if (size === 'normal') {
-        finalPrice = priceNormal;
-        if (!priceNormal || priceNormal <= 0) {
-            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
-            hideLoading();
-            return;
-        }
-    } else if (size === 'max') {
-        finalPrice = priceMax;
-        if (!priceMax || priceMax <= 0) {
-            showNotification('Cena dla wybranego rozmiaru jest wymagana.', 'error');
-            hideLoading();
-            return;
-        }
-    }
-    
-    // Tworzymy obiekt z cenami
-    const ceny = {};
-    if (priceMini > 0) ceny.mini = priceMini;
-    if (priceNormal > 0) ceny.normal = priceNormal;
-    if (priceMax > 0) ceny.max = priceMax;
-    
-    const formData = new FormData();
-    formData.append('nazwa', name);
-    formData.append('opis', description);
-    formData.append('cena', finalPrice);
-    formData.append('rozmiar', size);
-    formData.append('ceny', JSON.stringify(ceny));
-    if (imageFile) {
-        formData.append('productImage', imageFile);
-    }
-    
-    try {
-        const response = await fetch(`http://localhost:5000/api/products/${productId}`, { 
-            method: 'PUT', 
-            headers: { 
-                'x-auth-token': token 
-            }, 
-            body: formData 
-        });
-        
-        if (!response.ok) {
-            let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+        // --- ZMODYFIKOWANA OBSŁUGA FORMULARZY DODAWANIA PRODUKTU ---
+        addProductForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            
+            const name = document.getElementById('product-name').value;
+            const description = document.getElementById('product-description').value;
+            const imageFile = document.getElementById('product-image').files[0];
+            
+            // Pobierz ceny dla każdego rozmiaru
+            const priceMini = parseFloat(document.getElementById('price-mini').value) || 0;
+            const priceNormal = parseFloat(document.getElementById('price-normal').value) || 0;
+            const priceMax = parseFloat(document.getElementById('price-max').value) || 0;
+            
+            // Sprawdź, czy co najmniej jedna cena została ustawiona
+            if (priceMini <= 0 && priceNormal <= 0 && priceMax <= 0) {
+                showNotification('Musisz podać cenę dla co najmniej jednego rozmiaru.', 'error');
+                hideLoading();
+                return;
+            }
+            
+            // Tworzymy obiekt z cenami
+            const ceny = {};
+            if (priceMini > 0) ceny.mini = priceMini;
+            if (priceNormal > 0) ceny.normal = priceNormal;
+            if (priceMax > 0) ceny.max = priceMax;
+            
+            // Określ główny rozmiar na podstawie dostępnych cen
+            let mainSize = 'normal';
+            if (priceMini > 0 && priceNormal <= 0 && priceMax <= 0) mainSize = 'mini';
+            else if (priceMini <= 0 && priceNormal <= 0 && priceMax > 0) mainSize = 'max';
+            
+            // Użyj ceny dla głównego rozmiaru jako głównej ceny
+            const mainPrice = ceny[mainSize];
+            
+            // Tworzymy obiekt FormData do wysłania pliku i danych tekstowych
+            const formData = new FormData();
+            formData.append('nazwa', name);
+            formData.append('opis', description);
+            formData.append('cena', mainPrice);
+            formData.append('rozmiar', mainSize);
+            formData.append('ceny', JSON.stringify(ceny));
+            if (imageFile) {
+                formData.append('productImage', imageFile); // Klucz 'productImage' musi być taki sam jak w backendzie!
+            }
+            
             try {
-                const errorBody = await response.json();
-                errorDetail = errorBody.message || errorDetail;
-            } catch (e) { /* Ignore */ }
-            throw new Error(errorDetail);
-        }
-        
-        showNotification('Produkt zaktualizowany pomyślnie!', 'success');
-        editProductModal.classList.add('hidden');
-        
-        await fetchUserProducts();
-        
-    } catch (error) { 
-        console.error(error); 
-        showNotification('Błąd podczas aktualizacji produktu.', 'error'); 
-    } finally {
-        hideLoading();
-    }
-});
-
-// Obsługa formularza zmiany zdjęcia (już była poprawna, ale dla pewności wklejam jeszcze raz)
-changeImageForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    showLoading();
-    
-    const productId = document.getElementById('image-product-id').value;
-    const fileInput = document.getElementById('product-new-image');
-    const file = fileInput.files[0];
-    
-    if (!file) {
-        showNotification('Wybierz plik zdjęcia.', 'error');
-        hideLoading();
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('productImage', file); // Klucz musi się zgadzać z backendem
-    
-    try {
-        const response = await fetch(`http://localhost:5000/api/products/${productId}/image`, { 
-            method: 'PUT', 
-            headers: { 
-                'x-auth-token': token 
-            }, 
-            body: formData 
+                const res = await fetch('http://localhost:5000/api/products', { 
+                    method: 'POST', 
+                    headers: { 
+                        'x-auth-token': token 
+                        // Nie ustawiamy 'Content-Type' - przeglądarka zrobi to automatycznie dla FormData
+                    }, 
+                    body: formData // Wysyłamy FormData zamiast JSON
+                });
+                
+                if (!res.ok) throw new Error('Błąd serwera');
+                
+                showNotification('Produkt dodany pomyślnie!', 'success');
+                addProductForm.reset(); 
+                addProductModal.classList.add('hidden');
+                
+                await fetchUserProducts();
+                myProductsSection.classList.remove('hidden');
+                
+            } catch (error) { 
+                console.error(error); 
+                showNotification('Błąd podczas dodawania produktu.', 'error'); 
+            } finally {
+                hideLoading();
+            }
         });
-        
-        if (!response.ok) {
-            let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+
+        // --- ZMODYFIKOWANA OBSŁUGA FORMULARZA EDYCJI PRODUKTU ---
+        editProductForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            
+            const productId = document.getElementById('edit-product-id').value;
+            const name = document.getElementById('edit-product-name').value;
+            const description = document.getElementById('edit-product-description').value;
+            const imageFile = document.getElementById('edit-product-image').files[0];
+            
+            // Pobierz ceny dla każdego rozmiaru
+            const priceMini = parseFloat(document.getElementById('edit-price-mini').value) || 0;
+            const priceNormal = parseFloat(document.getElementById('edit-price-normal').value) || 0;
+            const priceMax = parseFloat(document.getElementById('edit-price-max').value) || 0;
+            
+            // Sprawdź, czy co najmniej jedna cena została ustawiona
+            if (priceMini <= 0 && priceNormal <= 0 && priceMax <= 0) {
+                showNotification('Musisz podać cenę dla co najmniej jednego rozmiaru.', 'error');
+                hideLoading();
+                return;
+            }
+            
+            // Tworzymy obiekt z cenami
+            const ceny = {};
+            if (priceMini > 0) ceny.mini = priceMini;
+            if (priceNormal > 0) ceny.normal = priceNormal;
+            if (priceMax > 0) ceny.max = priceMax;
+            
+            // Określ główny rozmiar na podstawie dostępnych cen
+            let mainSize = 'normal';
+            if (priceMini > 0 && priceNormal <= 0 && priceMax <= 0) mainSize = 'mini';
+            else if (priceMini <= 0 && priceNormal <= 0 && priceMax > 0) mainSize = 'max';
+            
+            // Użyj ceny dla głównego rozmiaru jako głównej ceny
+            const mainPrice = ceny[mainSize];
+            
+            const formData = new FormData();
+            formData.append('nazwa', name);
+            formData.append('opis', description);
+            formData.append('cena', mainPrice);
+            formData.append('rozmiar', mainSize);
+            formData.append('ceny', JSON.stringify(ceny));
+            if (imageFile) {
+                formData.append('productImage', imageFile);
+            }
+            
             try {
-                const errorBody = await response.json();
-                errorDetail = errorBody.message || errorDetail;
-            } catch (e) { /* Ignore */ }
-            throw new Error(errorDetail);
-        }
-        
-        showNotification('Zdjęcie produktu zaktualizowane pomyślnie!', 'success');
-        changeImageModal.classList.add('hidden');
-        
-        await fetchUserProducts();
-        
-    } catch (error) { 
-        console.error(error); 
-        showNotification('Błąd podczas aktualizacji zdjęcia produktu.', 'error'); 
-    } finally {
-        hideLoading();
-    }
-});
+                const response = await fetch(`http://localhost:5000/api/products/${productId}`, { 
+                    method: 'PUT', 
+                    headers: { 
+                        'x-auth-token': token 
+                    }, 
+                    body: formData 
+                });
+                
+                if (!response.ok) {
+                    let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorBody = await response.json();
+                        errorDetail = errorBody.message || errorDetail;
+                    } catch (e) { /* Ignore */ }
+                    throw new Error(errorDetail);
+                }
+                
+                showNotification('Produkt zaktualizowany pomyślnie!', 'success');
+                editProductModal.classList.add('hidden');
+                
+                await fetchUserProducts();
+                
+            } catch (error) { 
+                console.error(error); 
+                showNotification('Błąd podczas aktualizacji produktu.', 'error'); 
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Obsługa formularza zmiany zdjęcia (już była poprawna, ale dla pewności wklejam jeszcze raz)
+        changeImageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            
+            const productId = document.getElementById('image-product-id').value;
+            const fileInput = document.getElementById('product-new-image');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showNotification('Wybierz plik zdjęcia.', 'error');
+                hideLoading();
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('productImage', file); // Klucz musi się zgadzać z backendem
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/products/${productId}/image`, { 
+                    method: 'PUT', 
+                    headers: { 
+                        'x-auth-token': token 
+                    }, 
+                    body: formData 
+                });
+                
+                if (!response.ok) {
+                    let errorDetail = `Server error: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorBody = await response.json();
+                        errorDetail = errorBody.message || errorDetail;
+                    } catch (e) { /* Ignore */ }
+                    throw new Error(errorDetail);
+                }
+                
+                showNotification('Zdjęcie produktu zaktualizowane pomyślnie!', 'success');
+                changeImageModal.classList.add('hidden');
+                
+                await fetchUserProducts();
+                
+            } catch (error) { 
+                console.error(error); 
+                showNotification('Błąd podczas aktualizacji zdjęcia produktu.', 'error'); 
+            } finally {
+                hideLoading();
+            }
+        });
         
         // Obsługa przycisków usuwania
         confirmDeleteBtn.addEventListener('click', async () => {
@@ -1739,10 +1734,6 @@ changeImageForm.addEventListener('submit', async (e) => {
         fetchUserData();
         fetchUserOrders();
         fetchFavoriteProducts();
-        
-        // Inicjalizacja selektorów rozmiaru
-        setupSizeSelector('add');
-        setupSizeSelector('edit');
     });
     </script>
 </body>

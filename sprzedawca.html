@@ -136,11 +136,24 @@
             margin-top: 10px;
         }
 
+        /* --- NOWY STYL DLA CENY Z TŁEM (CHMURKĄ) --- */
         .product-card-price {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: bold;
-            color: #4CAF50;
+            color: #353535;
             margin: 0;
+            padding: 4px 10px;
+            background-color: #fedffa; /* Jasne zielone tło */
+            border-radius: 20px; /* Zaokrąglone rogi jak przycisk */
+            display: inline-block; /* Aby padding działał poprawnie */
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2); /* Delikatny cień */
+            transition: transform 0.2s, box-shadow 0.2s; /* Płynne przejścia */
+        }
+
+        /* Efekt hover dla ceny */
+        .product-card:hover .product-card-price {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 37, 237, 0.3);
         }
 
         /* Nowy styl dla przycisku "Dodaj do koszyka" na karcie produktu */
@@ -194,11 +207,9 @@
         .quick-view-body { 
             display: flex; 
             gap: 25px; 
-            overflow-y: auto; /* Włącz przewijanie pionowe */
             flex: 1; /* Pozwala elementowi zająć dostępną przestrzeń w pionie */
             min-height: 0; /* Kluczowe dla flexbox, aby element mógł się kurczyć */
-            /* Oblicz maksymalną wysokość, odejmując padding od rodzica */
-            max-height: calc(90vh - 60px); 
+            /* USUNIĘTO: overflow-y: auto i max-height, aby całość nie przewijała się */
         }
 
         /* Nowy kontener na zdjęcie i elementy pod nim */
@@ -226,11 +237,18 @@
             border-top: 1px solid #eee;
         }
 
+        /* --- NOWY STYL DLA CENY W QUICK VIEW Z TŁEM --- */
         .quick-view-price {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            color: #4CAF50;
+            color: #424242;
             margin: 0; /* Resetuje marginesy */
+            padding: 5px 16px;
+            background-color: #f5ddfd; /* Jasne zielone tło */
+            border-radius: 20px; /* Zaokrąglone rogi jak przycisk */
+            display: inline-block; /* Aby padding działał poprawnie */
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2); /* Delikatny cień */
+            transition: transform 0.2s, box-shadow 0.2s; /* Płynne przejścia */
         }
 
         /* Styl nowego przycisku */
@@ -254,6 +272,9 @@
             display: flex;
             flex-direction: column;
             flex: 1; /* Zajmuje pozostałą przestrzeń */
+            /* --- NOWE: WŁĄCZAMY PRZEWIJANIE TYLKO W TYM KONTENERZE --- */
+            overflow-y: auto; 
+            padding-right: 10px; /* Dodajemy odstęp dla paska przewijania */
         }
 
         .quick-view-details h2 {
@@ -268,9 +289,9 @@
             line-height: 1.6;
             overflow-wrap: break-word;
             word-break: break-word;
-            flex-grow: 1; /* Pozwala opisowi wypełnić przestrzeń */
             margin: 0;
-            /* Usunięto: -webkit-line-clamp, -webkit-box-orient, overflow */
+            /* --- USUNIĘTO: -webkit-line-clamp, -webkit-box-orient, overflow, text-overflow --- */
+            /* Teraz tekst może swobodnie płynąć i będzie przewijany razem z kontenerem */
         }
 
         /* Zaktualizowane style dla Quick View na urządzeniach mobilnych */
@@ -370,8 +391,8 @@
         
         /* --- ZMIANA: POWIĘKSZENIE ZDJĘCIA W MODALU WYBORU ROZMIARU --- */
         .size-selection-product-image {
-            width: 150px; /* Zwiększono z 80px */
-            height: 150px; /* Zwiększono z 80px */
+            width: 200px; /* Zwiększono z 80px */
+            height: 200px; /* Zwiększono z 80px */
             object-fit: cover;
             border-radius: 8px;
             flex-shrink: 0; /* Zapobiegaj kurczeniu się obrazka */
@@ -383,10 +404,18 @@
             color: #333;
         }
         
+        /* --- NOWA ZMIANA: OGRANICZENIE OPISU DO 20 SŁÓW --- */
         .size-selection-product-info p {
             margin: 0;
             color: #666;
             font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 4; /* Ogranicz do 4 linii */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         
         .size-options {
@@ -424,7 +453,7 @@
         
         .size-option-price {
             font-weight: bold;
-            color: #4CAF50;
+            color: #424242;
             font-size: 1.1rem;
         }
         
@@ -507,7 +536,7 @@
         
         <div class="header-buttons-container">
             <a href="/powiadomienia" class="icon-button hidden" aria-label="Powiadomienia" data-tooltip="Powiadomienia">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
             </a>
             <a href="/koszyk" class="icon-button hidden" aria-label="Koszyk" data-tooltip="Koszyk">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
@@ -586,7 +615,7 @@
                 <button class="size-selection-close">&times;</button>
             </div>
             
-            <!-- NOWY KONTENER Z PRZEWIJANIEM DLA TREŚCI -->
+            <!-- NOWY KONTENER Z PRZEWIJANIEM DLA TREŚCI MODALU -->
             <div class="size-selection-body">
                 <div class="size-selection-product">
                     <img id="size-selection-image" src="" alt="Zdjęcie produktu" class="size-selection-product-image">
@@ -1022,7 +1051,8 @@
             }
         }
 
-        // --- NOWA FUNKCJA OBSŁUGUJĄCA DODAWANIE DO KOSZYKA ---
+        // --- MODYFIKOWANA FUNKCJA OBSŁUGUJĄCA DODAWANIA DO KOSZYKA ---
+        // --- ZAWSZE OTWIERA MODAL WYBORU ROZMIARU ---
         function handleAddToCart(productId, productData) {
             // Sprawdź, czy użytkownik jest zalogowany
             const token = localStorage.getItem('token');
@@ -1032,34 +1062,10 @@
                 return;
             }
 
-            // Zapisz dane produktu globalnie
+            // Zawsze otwieraj modal wyboru rozmiaru, nawet jeśli jest tylko jedna opcja
             window.currentProductId = productId;
             window.currentProduct = productData;
-
-            const ceny = productData.ceny || {};
-            const availableSizes = Object.keys(ceny).filter(size => ceny[size] > 0);
-
-            // Jeśli nie ma zdefiniowanych cen dla różnych rozmiarów lub jest tylko jeden rozmiar
-            if (availableSizes.length <= 1) {
-                // Określ rozmiar i cenę do dodania
-                let sizeToAdd, priceToAdd;
-
-                if (availableSizes.length === 1) {
-                    // Jest jeden konkretny rozmiar z ceną
-                    sizeToAdd = availableSizes[0];
-                    priceToAdd = ceny[sizeToAdd];
-                } else {
-                    // Brak cen dla rozmiarów, użyj domyślnych wartości produktu
-                    sizeToAdd = productData.rozmiar || 'normal';
-                    priceToAdd = productData.cena;
-                }
-                
-                // Dodaj bezpośrednio do koszyka
-                addToCart(productId, sizeToAdd, priceToAdd);
-            } else {
-                // Jest więcej niż jeden rozmiar z ceną, pokaż modal wyboru
-                openSizeSelectionModal();
-            }
+            openSizeSelectionModal();
         }
 
         // --- FUNKCJE QUICK VIEW ---
@@ -1113,7 +1119,8 @@
         document.querySelector('.quick-view-close').addEventListener('click', closeQuickView);
         document.querySelector('.quick-view-overlay').addEventListener('click', closeQuickView);
 
-        // --- FUNKCJE MODALU WYBORU ROZMIARU ---
+        // --- MODYFIKOWANA FUNKCJA MODALU WYBORU ROZMIARU ---
+        // --- TERAZ OBSŁUGUJE RÓWNIEŻ PRODUKTY Z JEDNĄ CENĄ ---
         function openSizeSelectionModal() {
             if (!window.currentProductId) {
                 AuthManager.showNotification('Nie wybrano produktu.', 'error');
@@ -1155,44 +1162,74 @@
                 
                 // Stwórz opcje rozmiaru
                 let hasAnySize = false;
-                Object.entries(sizeDefinitions).forEach(([size, def]) => {
-                    // Sprawdź, czy cena dla tego rozmiaru jest dostępna
-                    const price = ceny[size] || 0;
-                    if (price > 0) {  // Pokaż tylko rozmiary z ustawioną ceną
-                        hasAnySize = true;
-                        const option = document.createElement('div');
-                        option.className = 'size-option';
-                        option.dataset.size = size;
-                        option.dataset.price = price;
-                        
-                        // Zaznacz domyślny rozmiar
-                        if (size === defaultSize) {
-                            option.classList.add('selected');
-                            confirmBtn.disabled = false;
-                        }
-                        
-                        option.innerHTML = `
-                            <div>
-                                <div class="size-option-name">${def.name}</div>
-                                <div class="size-option-desc">${def.desc}</div>
-                            </div>
-                            <div class="size-option-price">${price.toFixed(2)} zł</div>
-                        `;
-                        
-                        option.addEventListener('click', () => {
-                            // Usuń zaznaczenie z wszystkich opcji
-                            document.querySelectorAll('.size-option').forEach(opt => {
-                                opt.classList.remove('selected');
+                let hasSelectedOption = false;
+                
+                // Najpierw sprawdź, czy są jakieś ceny w obiekcie ceny
+                const availableSizes = Object.keys(ceny).filter(size => ceny[size] > 0);
+                
+                if (availableSizes.length > 0) {
+                    // Jeśli są zdefiniowane ceny dla rozmiarów, użyj ich
+                    Object.entries(sizeDefinitions).forEach(([size, def]) => {
+                        const price = ceny[size] || 0;
+                        if (price > 0) {  // Pokaż tylko rozmiary z ustawioną ceną
+                            hasAnySize = true;
+                            const option = document.createElement('div');
+                            option.className = 'size-option';
+                            option.dataset.size = size;
+                            option.dataset.price = price;
+                            
+                            // Zaznacz domyślny rozmiar
+                            if (size === defaultSize || (!hasSelectedOption && availableSizes.length === 1)) {
+                                option.classList.add('selected');
+                                confirmBtn.disabled = false;
+                                hasSelectedOption = true;
+                            }
+                            
+                            option.innerHTML = `
+                                <div>
+                                    <div class="size-option-name">${def.name}</div>
+                                    <div class="size-option-desc">${def.desc}</div>
+                                </div>
+                                <div class="size-option-price">${price.toFixed(2)} zł</div>
+                            `;
+                            
+                            option.addEventListener('click', () => {
+                                // Usuń zaznaczenie z wszystkich opcji
+                                document.querySelectorAll('.size-option').forEach(opt => {
+                                    opt.classList.remove('selected');
+                                });
+                                
+                                // Zaznacz klikniętą opcję
+                                option.classList.add('selected');
+                                confirmBtn.disabled = false;
                             });
                             
-                            // Zaznacz klikniętą opcję
-                            option.classList.add('selected');
-                            confirmBtn.disabled = false;
-                        });
-                        
-                        sizeOptions.appendChild(option);
-                    }
-                });
+                            sizeOptions.appendChild(option);
+                        }
+                    });
+                } else {
+                    // Jeśli nie ma zdefiniowanych cen dla rozmiarów, utwórz jedną opcję z domyślną ceną
+                    hasAnySize = true;
+                    const option = document.createElement('div');
+                    option.className = 'size-option selected';
+                    option.dataset.size = defaultSize;
+                    option.dataset.price = product.cena || 0;
+                    confirmBtn.disabled = false;
+                    
+                    option.innerHTML = `
+                        <div>
+                            <div class="size-option-name">Standardowy rozmiar</div>
+                            <div class="size-option-desc">Dostępny rozmiar tego produktu</div>
+                        </div>
+                        <div class="size-option-price">${(product.cena || 0).toFixed(2)} zł</div>
+                    `;
+                    
+                    option.addEventListener('click', () => {
+                        // W tym przypadku nie ma innych opcji, więc nie ma potrzeby zmiany zaznaczenia
+                    });
+                    
+                    sizeOptions.appendChild(option);
+                }
                 
                 // Jeśli nie ma żadnych opcji rozmiaru, poinformuj użytkownika
                 if (!hasAnySize) {
